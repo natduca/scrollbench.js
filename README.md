@@ -28,7 +28,7 @@ We end up with a list of frame times for the duration of the scroll. From this w
 Just copy the contents of bin/scroll_js_bookmarklet.js to any page in the console or install it as a bookmarklet, or paste this:
 
 ```
-javascript:(function(){var b=window.G_scroll_js_path||"https://raw.github.com/natduca/scroll.js/master/scroll.js",a=document.createElement("script");a.src=b;a.addEventListener("load",function(){new window.__ScrollTest(function(a){alert("Done: "+JSON.stringify(a,null,"  "))})});document.head.appendChild(a)})();
+(function(){function b(){new window.__ScrollTest(c)}function c(a){alert("Done: "+JSON.stringify(a,null,"  "))}var d=window.G_scroll_js_path||"https://raw.github.com/natduca/scroll.js/master/scroll.js";if(window.__ScrollTest)b();else{var a=document.createElement("script");a.src=d;a.addEventListener("load",b);document.head.appendChild(a)}})();
 ```
 
 ### Building the Benchmark

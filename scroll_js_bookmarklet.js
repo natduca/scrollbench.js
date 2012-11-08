@@ -4,12 +4,21 @@
 (function() {
   var scroll_js_path = window.G_scroll_js_path ||
       ('https:/' + '/raw.github.com/natduca/scroll.js/master/scroll.js');
-  var el = document.createElement('script');
-  el.src = scroll_js_path;
-  el.addEventListener('load', function() {
-    new window.__ScrollTest(function(results) {
-      alert("Done: " + JSON.stringify(results, null, "  "));
-    });
-  });
-  document.head.appendChild(el);
+
+  function run() {
+    new window.__ScrollTest(report);
+  }
+
+  function report(results) {
+    alert("Done: " + JSON.stringify(results, null, "  "));
+  }
+
+  if (!window.__ScrollTest) {
+    var el = document.createElement('script');
+    el.src = scroll_js_path;
+    el.addEventListener('load', run);
+    document.head.appendChild(el);
+  } else {
+    run();
+  }
 })();
