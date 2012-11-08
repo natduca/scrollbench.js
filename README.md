@@ -25,8 +25,13 @@ We end up with a list of frame times for the duration of the scroll. From this w
 
 ### Running the Benchmark
 
-Just copy the contents of bin/scroll-js-bookmarklet.js to any page in the console or install it as a bookmarklet.
+Just copy the contents of bin/scroll_js_bookmarklet.js to any page in the console or install it as a bookmarklet, or paste this:
+
+```
+javascript:(function(){var b=window.G_scroll_js_path||"https://raw.github.com/natduca/scroll.js/master/scroll.js",a=document.createElement("script");a.src=b;a.addEventListener("load",function(){new window.__ScrollTest(function(a){alert("Done: "+JSON.stringify(a,null,"  "))})});document.head.appendChild(a)})();
+```
 
 ### Building the Benchmark
 
 We keep the contents of the benchmark un-minified for simplicity, but to build the minified bookmarklet JS just run:
+
