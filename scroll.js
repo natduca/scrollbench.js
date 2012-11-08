@@ -46,10 +46,10 @@
 
   SmoothScrollDownGesture.prototype.start = function(callback) {
     this.callback_ = callback;
-    if (chrome &&
-        chrome.gpuBenchmarking &&
-        chrome.gpuBenchmarking.beginSmoothScrollDown) {
-      chrome.gpuBenchmarking.beginSmoothScrollDown(true, function() {
+    if (window.chrome &&
+        window.chrome.gpuBenchmarking &&
+        window.chrome.gpuBenchmarking.beginSmoothScrollDown) {
+      window.chrome.gpuBenchmarking.beginSmoothScrollDown(true, function() {
         callback();
       });
       return;
