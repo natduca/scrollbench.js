@@ -2,7 +2,7 @@
 
 Scroll.js is a simple bit of javascript that can be used to instrument scrolls on a web page. It’s goal is to measure scrolling framerate as accurately as possible across browsers.
 
-##Methodology
+## Methodology
 
 To measure scrolling effectively it’s critical that instrumentation:
  * Interferes minimally with normal browser behavior
@@ -20,7 +20,8 @@ The rough methodology is:
 We end up with a list of frame times for the duration of the scroll. From this we can infer average frame rate, how many frames were "missed" (e.g. longer than 1/60 ms on a 60Hz display), etc.
 
 
-### Note yet real:
+
+## Not yet real:
 
 ### Running the Benchmark
 
