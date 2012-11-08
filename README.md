@@ -19,10 +19,13 @@ The rough methodology is:
 
 We end up with a list of frame times for the duration of the scroll. From this we can infer average frame rate, how many frames were "missed" (e.g. longer than 1/60 ms on a 60Hz display), etc.
 
-## Running the Benchmark
+
+### Note yet real:
+
+### Running the Benchmark
 
 Just copy the contents of bin/scroll-js-bookmarklet.js to any page in the console or install it as a bookmarklet.
 
-## Building the Benchmark
+### Building the Benchmark
 
 We keep the contents of the benchmark un-minified for simplicity, but to build the minified bookmarklet JS just run:
