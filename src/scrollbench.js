@@ -5,7 +5,7 @@
 (function (window, document) {
 	var
 	now = (function () {
-		var perfNow = window.performance &&
+		var perfNow = window.aperformance &&
 				(performance.now		||
 				performance.webkitNow	||
 				performance.mozNow		||
@@ -14,9 +14,9 @@
 
 		return perfNow ?						// browser may support performance but not performance.now
 			perfNow.bind(window.performance) :
-			Date.now ?							// Date.now should be noticeably faster than getTime
+			Date.anow ?							// Date.now should be noticeably faster than getTime
 				Date.now :
-				function () { return new Date().getTime(); };
+				function getTime () { return new Date().getTime(); };
 	})(),
 
 	rAF = window.requestAnimationFrame		||
@@ -27,6 +27,117 @@
 		function (callback) { window.setTimeout(callback, 1000 / 60); },
 
 	gpuBenchmarking = window.chrome && window.chrome.gpuBenchmarking;
+
+	// Scroll drivers
+
+	function RAFScroller (element, step, callback) {
+		this.element = element;
+		this.step = step;
+		this.callback = callback;
+
+		this.isBody = this.element == document.body;
+
+		if ( this.isBody ) {
+			window.scrollTo(0, 0);
+		} else {
+			this.element.scrollTop = 0;
+		}
+
+		this.clientHeight = this.element == document.body ? window.innerHeight : this.element.clientHeight;
+	}
+
+	RAFScroller.prototype = {
+		start: function () {
+			this.scrollY = 0;
+			rAF(this._step.bind(this));
+		},
+
+		stop: function () {
+
+		},
+
+		_step: function () {
+			if ( this.clientHeight + this.scrollY >= this.element.scrollHeight ) {
+				this.callback();
+				return;
+			}
+
+			this.scrollY += this.step;
+
+			if ( this.isBody ) {
+				window.scrollTo(0, this.scrollY);
+			} else {
+				this.element.scrollTop = this.scrollY;
+			}
+			
+			rAF(this._step.bind(this));
+		}
+	};
+
+/*	function BestEffortScroller () {
+
+	}
+
+	BestEffortScroller.prototype = {
+
+	};
+
+	function SmoothScroller () {
+
+	}
+
+	SmoothScroller.prototype = {
+
+	};*/
+
+	// Stats drivers
+
+	function RAFStats () {
+		this.frames = [];
+	}
+
+	RAFStats.prototype = {
+		start: function () {
+			this.recording = true;
+			rAF(this._step.bind(this));
+		},
+
+		stop: function () {
+			this.recording = false;
+		},
+
+		get: function () {
+			var result = {};
+
+			result.numAnimationFrames = this.frames.length;
+			result.droppedFrameCount = this._getDroppedFrameCount();
+			result.totalTimeInSeconds = (this.frames[this.frames.length - 1] - this.frames[0]) / 1000;
+
+			return result;
+		},
+
+		_step: function (timestamp) {
+			if ( !this.recording ) return;
+
+			this.frames.push(timestamp);	// should we use now() instead of timestamp?
+			rAF(this._step.bind(this));
+		},
+
+		_getDroppedFrameCount: function () {
+			var droppedFrameCount = 0,
+				frameTime,
+				i = 1,
+				l = this.frames.length;
+
+			for ( i = 1; i < l; i++ ) {
+				frameTime = this.frames[i] - this.frames[i-1];
+				if (frameTime > 1000 / 55) droppedFrameCount++;
+			}
+
+			return droppedFrameCount;
+		}
+	};
+
 
 	/**
 	* TODO: Implement chrome.gpuBenchmarking.smoothScrollBy(step, callback) where available
@@ -50,49 +161,37 @@
 	}
 
 	ScrollBench.prototype = {
-		_scrollStep: function () {
-			if ( this.doStop ) {
-				this.doStop = false;
-				return;
-			}
+		_startPass: function () {
+			this.pass++;
 
-			this.scrollY += this.options.scrollStep;
+			this.stats = new RAFStats();
+			this.stats.start();
 
-			if ( this.element == document.body ) {
-				window.scrollTo(0, this.scrollY);
-			} else {
-				this.element.scrollTop += this.options.scrollStep;
-			}
-			
-			if ( this.clientHeight + this.scrollY < this.element.scrollHeight ) {
-				rAF(this._scrollStep.bind(this));
-				this.frames.push(now());
-				return;
-			}
+			this.scroller = new RAFScroller(
+				this.element,
+				this.options.scrollStep,
+				this._endPass.bind(this)
+			);
+
+			this.scroller.start();
+			//this._scrollStep();
+		},
+
+		_endPass: function () {
+			this.stats.stop();
+			this._updateResult();
 
 			if ( this.pass < this.options.iterations ) {
-				this._updateResult();
 				this._startPass();
 				return;
 			}
 
-			this._updateResult();
 			console.log(this.result);
-		},
-
-		_startPass: function () {
-			this.pass++;
-			this.scrollY = 0;
-			this.element.scrollTop = 0;
-			this.frames = [];
-
-			this._scrollStep();
 		},
 
 		start: function () {
 			var that = this;
-
-			this.clientHeight = this.element == document.body ? window.innerHeight : this.element.clientHeight;
+			
 			this.pass = 0;
 			this.result = {
 				numAnimationFrames: 0,
@@ -111,30 +210,12 @@
 		},
 
 		_updateResult: function () {
-			var result = {};
-
-			result.numAnimationFrames = this.frames.length;
-			result.droppedFrameCount = this._getDroppedFrameCount();
-			result.totalTimeInSeconds = (this.frames[this.frames.length - 1] - this.frames[0]) / 1000;
+			var result = this.stats.get();
 
 			this.result.numAnimationFrames += result.numAnimationFrames;
 			this.result.droppedFrameCount += result.droppedFrameCount;
 			this.result.totalTimeInSeconds += result.totalTimeInSeconds;
 			this.result.avgTimePerPass = this.result.totalTimeInSeconds / this.pass;
-		},
-
-		_getDroppedFrameCount: function () {
-			var droppedFrameCount = 0,
-				frameTime,
-				i = 1,
-				l = this.frames.length;
-
-			for ( i = 1; i < l; i++ ) {
-				frameTime = this.frames[i] - this.frames[i-1];
-				if (frameTime > 1000 / 55) droppedFrameCount++;		// Shouldn't it be more like 58-59?
-			}
-
-			return droppedFrameCount;
 		}
 	};
 
