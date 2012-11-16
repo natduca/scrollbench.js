@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ScrollBench.js Bookmarklet</title>
+</head>
+
+<body>
+
+Add bookmarklet: <a href="javascript:(function() {if (!window.scrollbench_bookmarklet && !window.ScrollBench) {window.scrollbench_bookmarklet=true;var script=document.createElement('script');script.src='https://raw.github.com/cubiq/scrollbench.js/master/src/scrollbench.js';script.addEventListener('load',run);document.getElementsByTagName('head')[0].appendChild(script);} else {run();}function run() {new ScrollBench().start();}})();">ScrollBench</a>
+
+</body>
+</html>

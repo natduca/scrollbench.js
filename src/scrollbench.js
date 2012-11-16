@@ -20,7 +20,7 @@
 	})(),
 
 	rAF = window.requestAnimationFrame		||
-		window.webkitRequestAnimationFrame	||
+		window.awebkitRequestAnimationFrame	||
 		window.mozRequestAnimationFrame		||
 		window.oRequestAnimationFrame		||
 		window.msRequestAnimationFrame		||
@@ -31,9 +31,12 @@
 	// Scroll drivers
 
 	function RAFScroller (element, step, callback) {
+		var that = this;
+
 		this.element = element;
 		this.step = step;
 		this.callback = callback;
+		this.timeFrames = [];
 
 		this.isBody = this.element == document.body;
 
@@ -47,20 +50,66 @@
 	}
 
 	RAFScroller.prototype = {
+		getResult: function () {
+			var result = {};
+
+			result.numAnimationFrames = this.timeFrames.length;
+			result.droppedFrameCount = this._getDroppedFrameCount();
+			result.totalTimeInSeconds = (this.timeFrames[this.timeFrames.length - 1] - this.timeFrames[0]) / 1000;
+
+			return result;
+		},
+
 		start: function () {
+			this.rolling = true;
 			this.scrollY = 0;
+
+			if ( this.stats ) this.stats.start();
+
 			rAF(this._step.bind(this));
 		},
 
 		stop: function () {
-
+			this.rolling = false;
 		},
 
-		_step: function () {
-			if ( this.clientHeight + this.scrollY >= this.element.scrollHeight ) {
-				this.callback();
-				return;
+		_getDroppedFrameCount: function () {
+			var droppedFrameCount = 0,
+				frameTime,
+				i = 1,
+				l = this.timeFrames.length;
+
+			for ( i = 1; i < l; i++ ) {
+				frameTime = this.timeFrames[i] - this.timeFrames[i-1];
+				if (frameTime > 1000 / 55) droppedFrameCount++;
 			}
+
+			return droppedFrameCount;
+		},
+
+		_getScrollPosition: function () {
+			var doc = document.documentElement,
+				body = document.body;
+
+			return {
+				left: doc && doc.scrollLeft || body && body.scrollLeft || 0,
+				top: doc && doc.scrollTop  || body && body.scrollTop  || 0
+			};
+		},
+
+		_step: function (timestamp) {
+			if ( this.clientHeight + this.scrollY >= this.element.scrollHeight ) {
+				this.rolling = false;
+				this.callback();
+			}
+
+			if ( !this.rolling ) return;
+
+			rAF(this._step.bind(this));
+
+			this.timeFrames.push(now());
+
+			if ( this._getScrollPosition().top !== this.scrollY ) return;	// browser wasn't able to scroll within 16ms (TODO: double check this!)
 
 			this.scrollY += this.step;
 
@@ -69,8 +118,6 @@
 			} else {
 				this.element.scrollTop = this.scrollY;
 			}
-			
-			rAF(this._step.bind(this));
 		}
 	};
 
@@ -89,54 +136,6 @@
 	SmoothScroller.prototype = {
 
 	};*/
-
-	// Stats drivers
-
-	function RAFStats () {
-		this.frames = [];
-	}
-
-	RAFStats.prototype = {
-		start: function () {
-			this.recording = true;
-			rAF(this._step.bind(this));
-		},
-
-		stop: function () {
-			this.recording = false;
-		},
-
-		get: function () {
-			var result = {};
-
-			result.numAnimationFrames = this.frames.length;
-			result.droppedFrameCount = this._getDroppedFrameCount();
-			result.totalTimeInSeconds = (this.frames[this.frames.length - 1] - this.frames[0]) / 1000;
-
-			return result;
-		},
-
-		_step: function (timestamp) {
-			if ( !this.recording ) return;
-
-			this.frames.push(timestamp);	// should we use now() instead of timestamp?
-			rAF(this._step.bind(this));
-		},
-
-		_getDroppedFrameCount: function () {
-			var droppedFrameCount = 0,
-				frameTime,
-				i = 1,
-				l = this.frames.length;
-
-			for ( i = 1; i < l; i++ ) {
-				frameTime = this.frames[i] - this.frames[i-1];
-				if (frameTime > 1000 / 55) droppedFrameCount++;
-			}
-
-			return droppedFrameCount;
-		}
-	};
 
 
 	/**
@@ -164,9 +163,6 @@
 		_startPass: function () {
 			this.pass++;
 
-			this.stats = new RAFStats();
-			this.stats.start();
-
 			this.scroller = new RAFScroller(
 				this.element,
 				this.options.scrollStep,
@@ -174,11 +170,9 @@
 			);
 
 			this.scroller.start();
-			//this._scrollStep();
 		},
 
 		_endPass: function () {
-			this.stats.stop();
 			this._updateResult();
 
 			if ( this.pass < this.options.iterations ) {
@@ -186,7 +180,7 @@
 				return;
 			}
 
-			console.log(this.result);
+			alert(JSON.stringify(this.result, null, '\n'));
 		},
 
 		start: function () {
@@ -200,9 +194,7 @@
 				avgTimePerPass: 0
 			};
 
-			setTimeout(function () {
-				that._startPass();
-			}, 0);
+			setTimeout(this._startPass.bind(this), 0);
 		},
 
 		stop: function () {
@@ -210,7 +202,7 @@
 		},
 
 		_updateResult: function () {
-			var result = this.stats.get();
+			var result = this.scroller.getResult();
 
 			this.result.numAnimationFrames += result.numAnimationFrames;
 			this.result.droppedFrameCount += result.droppedFrameCount;
