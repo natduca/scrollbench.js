@@ -38,15 +38,13 @@
 		this.callback = callback;
 		this.timeFrames = [];
 
-		this.isBody = this.element == document.body;
+		this.isDocument = this.element == document.documentElement;
 
-		if ( this.isBody ) {
+		if ( this.isDocument ) {
 			window.scrollTo(0, 0);
 		} else {
 			this.element.scrollTop = 0;
 		}
-
-		this.clientHeight = this.element == document.body ? window.innerHeight : this.element.clientHeight;
 	}
 
 	RAFScroller.prototype = {
@@ -98,7 +96,7 @@
 		},
 
 		_step: function (timestamp) {
-			if ( this.clientHeight + this.scrollY >= this.element.scrollHeight ) {
+			if ( this.element.clientHeight + this.scrollY >= this.element.scrollHeight ) {
 				this.rolling = false;
 				this.callback();
 			}
@@ -113,7 +111,7 @@
 
 			this.scrollY += this.step;
 
-			if ( this.isBody ) {
+			if ( this.isDocument ) {
 				window.scrollTo(0, this.scrollY);
 			} else {
 				this.element.scrollTop = this.scrollY;
@@ -152,10 +150,10 @@
 
 		for ( var i in options ) this.options[i] = options[i];
 
-		this.element = this.options.element || document.body;
+		this.element = this.options.element || document.documentElement;
 
 		if ( !this.options.scrollDriver ) {
-			this.options.scrollDriver = gpuBenchmarking && window.chrome.gpuBenchmarking.smoothScrollBy && this.element == document.body ? 'chromeSmoothScroll' : '';
+			this.options.scrollDriver = gpuBenchmarking && window.chrome.gpuBenchmarking.smoothScrollBy && this.element == document.documentElement ? 'chromeSmoothScroll' : '';
 		}
 	}
 
@@ -180,7 +178,7 @@
 				return;
 			}
 
-			alert(JSON.stringify(this.result, null, '\n'));
+			alert(JSON.stringify(this.result, null, '  '));
 		},
 
 		start: function () {

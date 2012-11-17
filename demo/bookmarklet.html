@@ -7,7 +7,7 @@
 
 <body>
 
-Add bookmarklet: <a href="javascript:(function() {if (!window.scrollbench_bookmarklet && !window.ScrollBench) {window.scrollbench_bookmarklet=true;var script=document.createElement('script');script.src='https://raw.github.com/cubiq/scrollbench.js/master/src/scrollbench.js';script.addEventListener('load',run);document.getElementsByTagName('head')[0].appendChild(script);} else {run();}function run() {new ScrollBench().start();}})();">ScrollBench</a>
+Add bookmarklet: <a href="javascript:(function(){if(!window.scrollbench_bookmarklet) {window.scrollbench_bookmarklet=true;var script=document.createElement('script');script.src='https://raw.github.com/cubiq/scrollbench.js/master/src/scrollbench.js';script.addEventListener('load', run, false);document.getElementsByTagName('head')[0].appendChild(script);}else{run();}function run(){window.ScrollBench && new ScrollBench().start();}})()">ScrollBench</a>
 
 </body>
 </html>
