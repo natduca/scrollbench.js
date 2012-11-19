@@ -28,23 +28,12 @@
 
 	gpuBenchmarking = window.chrome && window.chrome.gpuBenchmarking;
 
-	// Scroll drivers
 
-	function RAFScroller (element, step, callback) {
-		var that = this;
-
-		this.element = element;
-		this.step = step;
-		this.callback = callback;
-		this.timeFrames = [];
-
-		this.isDocument = this.element == document.documentElement;
-
-		if ( this.isDocument ) {
-			window.scrollTo(0, 0);
-		} else {
-			this.element.scrollTop = 0;
-		}
+/*
+	RAF Scroller
+	RAF Stats
+*/
+	function RAFScroller () {
 	}
 
 	RAFScroller.prototype = {
@@ -58,11 +47,22 @@
 			return result;
 		},
 
-		start: function () {
+		start: function (element, callback, step) {
+			this.element = element;
+			this.callback = callback;
+			this.step = step;
+
+			this.timeFrames = [];
+			this.isDocument = this.element == document.documentElement;
+
+			if ( this.isDocument ) {
+				window.scrollTo(0, 0);
+			} else {
+				this.element.scrollTop = 0;
+			}
+
 			this.rolling = true;
 			this.scrollY = 0;
-
-			if ( this.stats ) this.stats.start();
 
 			rAF(this._step.bind(this));
 		},
@@ -119,26 +119,57 @@
 		}
 	};
 
-/*	function BestEffortScroller () {
 
-	}
-
-	BestEffortScroller.prototype = {
-
-	};
-
+/*
+	smoothScrollBy Scroller
+	gpuBenchmarking Stats
+*/
 	function SmoothScroller () {
-
 	}
 
 	SmoothScroller.prototype = {
+		getResult: function () {
+			var result = this.finalStat;
 
-	};*/
+			for (var i in result) {
+				result[i] -= this.initialStat[i];
+			}
 
+			return result;
+		},
 
-	/**
-	* TODO: Implement chrome.gpuBenchmarking.smoothScrollBy(step, callback) where available
-	*/
+		start: function (element, callback) {
+			var step = element.scrollHeight - element.clientHeight,
+				that = this;
+
+			if ( element == document.documentElement ) {
+				window.scrollTo(0, 0);
+			} else {
+				element.scrollTop = 0;
+			}
+
+			this.initialStat = this._step();
+			chrome.gpuBenchmarking.smoothScrollBy(step, function () {
+				that.finalStat = that._step();
+				callback();
+			});
+		},
+
+		stop: function () {
+			// TODO: how do you stop a smoothScrollBy? Should we scroll by steps?
+			//chrome.gpuBenchmarking.smoothScrollBy(0);
+		},
+
+		_step: function () {
+			var stats = chrome.gpuBenchmarking.renderingStats();
+			stats.totalTimeInSeconds = now() / 1000;
+
+			return stats;
+		}
+	};
+
+///////////////////////////
+
 	function ScrollBench (options) {
 		this.options = {
 			element: null,
@@ -153,7 +184,7 @@
 		this.element = this.options.element || document.documentElement;
 
 		if ( !this.options.scrollDriver ) {
-			this.options.scrollDriver = gpuBenchmarking && window.chrome.gpuBenchmarking.smoothScrollBy && this.element == document.documentElement ? 'chromeSmoothScroll' : '';
+			this.options.scrollDriver = gpuBenchmarking && window.chrome.gpuBenchmarking.smoothScrollBy && this.element == document.documentElement ? 'smoothScroll' : '';
 		}
 	}
 
@@ -161,13 +192,17 @@
 		_startPass: function () {
 			this.pass++;
 
-			this.scroller = new RAFScroller(
-				this.element,
-				this.options.scrollStep,
-				this._endPass.bind(this)
-			);
+			if ( this.options.scrollDriver == 'smoothScroll' ) {
+				this.scroller = new SmoothScroller();
+			} else {
+				this.scroller = new RAFScroller();
+			}
 
-			this.scroller.start();
+			this.scroller.start(
+				this.element,
+				this._endPass.bind(this),
+				this.options.scrollStep
+			);
 		},
 
 		_endPass: function () {
@@ -185,26 +220,23 @@
 			var that = this;
 			
 			this.pass = 0;
-			this.result = {
-				numAnimationFrames: 0,
-				droppedFrameCount: 0,
-				totalTimeInSeconds: 0,
-				avgTimePerPass: 0
-			};
+			this.result = {};
 
 			setTimeout(this._startPass.bind(this), 0);
 		},
 
 		stop: function () {
-			this.doStop = true;
+			this.scroller.stop();
 		},
 
 		_updateResult: function () {
-			var result = this.scroller.getResult();
+			var result = this.scroller.getResult(),
+				i;
 
-			this.result.numAnimationFrames += result.numAnimationFrames;
-			this.result.droppedFrameCount += result.droppedFrameCount;
-			this.result.totalTimeInSeconds += result.totalTimeInSeconds;
+			for ( i in result ) {
+				this.result[i] = (this.result[i] || 0) + result[i];
+			}
+
 			this.result.avgTimePerPass = this.result.totalTimeInSeconds / this.pass;
 		}
 	};
