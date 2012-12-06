@@ -5,7 +5,7 @@
 (function (window, document) {
 	var
 	now = (function () {
-		var perfNow = window.aperformance &&
+		var perfNow = window.performance &&
 				(performance.now		||
 				performance.webkitNow	||
 				performance.mozNow		||
@@ -14,7 +14,7 @@
 
 		return perfNow ?						// browser may support performance but not performance.now
 			perfNow.bind(window.performance) :
-			Date.anow ?							// Date.now should be noticeably faster than getTime
+			Date.now ?							// Date.now should be noticeably faster than getTime
 				Date.now :
 				function getTime () { return new Date().getTime(); };
 	})(),
