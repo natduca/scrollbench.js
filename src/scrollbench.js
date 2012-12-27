@@ -20,7 +20,7 @@
 	})(),
 
 	rAF = window.requestAnimationFrame		||
-		window.awebkitRequestAnimationFrame	||
+		window.webkitRequestAnimationFrame	||
 		window.mozRequestAnimationFrame		||
 		window.oRequestAnimationFrame		||
 		window.msRequestAnimationFrame		||
