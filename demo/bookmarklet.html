@@ -7,7 +7,11 @@
 
 <body>
 
-Add bookmarklet: <a href="javascript:(function(){if(!window.scrollbench_bookmarklet) {window.scrollbench_bookmarklet=true;var script=document.createElement('script');script.src='http://lab.cubiq.org/scrollbench.js/src/scrollbench.js';script.addEventListener('load', run, false);document.getElementsByTagName('head')[0].appendChild(script);}else{run();}function run(){window.ScrollBench && new ScrollBench().start();}})()">ScrollBench</a>
+Add bookmarklet: <!-- bookmarklet_start --><a href="javascript:(function(){function e(){window.ScrollBench&&(new ScrollBench).start()}if(window.scrollbench_bookmarklet)e();else{window.scrollbench_bookmarklet=!0;var c=document.createElement('script');c.src='http://lab.cubiq.org/scrollbench.js/src/scrollbench.js',c.addEventListener('load',e,!1),document.getElementsByTagName('head')[0].appendChild(c)}})();"><!-- bookmarklet_end -->ScrollBench</a>
+
+<br>
+
+<!-- bookmarklet_start --><textarea>javascript:(function(){function e(){window.ScrollBench&&(new ScrollBench).start()}if(window.scrollbench_bookmarklet)e();else{window.scrollbench_bookmarklet=!0;var c=document.createElement('script');c.src='http://lab.cubiq.org/scrollbench.js/src/scrollbench.js',c.addEventListener('load',e,!1),document.getElementsByTagName('head')[0].appendChild(c)}})();</textarea><!-- bookmarklet_end -->
 
 </body>
 </html>
