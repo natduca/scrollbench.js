@@ -28,7 +28,6 @@
 
 	gpuBenchmarking = window.chrome && window.chrome.gpuBenchmarking;
 
-
 /*
 	RAF Scroller
 	RAF Stats
@@ -107,7 +106,7 @@
 
 			this.timeFrames.push(now());
 
-			if ( this._getScrollPosition().top !== this.scrollY ) return;	// browser wasn't able to scroll within 16ms (TODO: double check this!)
+//			if ( this._getScrollPosition().top !== this.scrollY ) return;	// browser wasn't able to scroll within 16ms (TODO: double check this!)
 
 			this.scrollY += this.step;
 
