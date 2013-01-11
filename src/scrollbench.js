@@ -288,7 +288,7 @@
 			var iframe = document.createElement('iframe'),
 				out;
 
-			iframe.style.cssText = 'position:fixed;bottom:0;left:0;height:290px;width:100%;padding:0;margin:0;border:0';
+			iframe.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;height:290px;width:100%;padding:0;margin:0;border:0';
 			iframe.border = '0';
 			iframe.width = '100%';
 			iframe.height = '290';
@@ -297,10 +297,10 @@
 			iframe = iframe.contentWindow || iframe.contentDocument || iframe.document;
 
 			// open
-			out  = '<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" type="text/css" href="http://192.168.123.120/scrollbench.js/css/report.css?' + Date.now() + '"></head><body><div id="report">';
+			out  = '<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" type="text/css" href="http://lab.cubiq.org/scrollbench.js/css/report.css?' + Date.now() + '"></head><body><div id="report">';
 
 			// header
-			out += '<header><object id="logo" height="100%" data="http://192.168.123.120/scrollbench.js/images/scrollbenchjs-logo-anim.svg?stroke=f4f4f4" type="image/svg+xml"></object><h1>Report</h1><div id="moreinfo">? Info</div></header>';
+			out += '<header><object id="logo" height="100%" data="http://lab.cubiq.org/scrollbench.js/images/scrollbenchjs-logo-anim.svg?stroke=f4f4f4" type="image/svg+xml"></object><h1>Report</h1><div id="moreinfo">? Info</div></header>';
 
 			// main stats
 			out += '<section id="stats"><table><tr><th>Total frames</th><td>' + this.result.numAnimationFrames + '</td></tr><tr><th>Dropped frames</th><td>' + this.result.droppedFrameCount + '</td></tr><tr><th>Total time</th><td>' + this.result.totalTimeInSeconds + '</td></tr><tr><th>Avg time</th><td>' + this.result.avgTimePerPass + '</td></tr><tr><th>Reliability grade</th><td class="reliability ' + reliabilityReport.grade + '">' + reliabilityReport.grade + '</td></tr>';
