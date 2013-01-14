@@ -119,12 +119,16 @@
 		},
 
 		_getScrollPosition: function () {
-			var doc = document.documentElement,
-				body = document.body;
+			if ( this.isDocument ) {
+				return {
+					left: Math.max(document.documentElement.scrollLeft, document.body.scrollLeft),
+					top: Math.max(document.documentElement.scrollTop, document.body.scrollTop)
+				};	// TODO: check this for cross browser compatibility
+			}
 
 			return {
-				left: doc && doc.scrollLeft || body && body.scrollLeft || 0,
-				top: doc && doc.scrollTop  || body && body.scrollTop  || 0
+				left: this.element.scrollLeft,
+				top: this.element.scrollTop
 			};
 		},
 
@@ -140,7 +144,9 @@
 
 			this.timeFrames.push(now());
 
-			if ( this._getScrollPosition().top !== this.scrollY ) return;	// browser wasn't able to scroll within 16ms (TODO: double check this!)
+			if ( this._getScrollPosition().top !== this.scrollY ) {		// browser wasn't able to scroll within 16ms (TODO: double check this!)
+				return;
+			}
 
 			this.scrollY += this.step;
 
@@ -203,36 +209,88 @@
 ///////////////////////////
 
 	function ScrollBench (options) {
-		var i, smoothScroll;
+		this.ready = false;
 
 		this.options = {
 			element: null,
 			iterations: 2,
 			scrollStep: 100,
 			scrollDriver: '',
-			onCompletion: null
+			onCompletion: null,
+			loadConfig: true,
+			scrollableElementFn: null
 		};
 
-		for ( i in options ) this.options[i] = options[i];
-
-		this.element = this.options.element || document.documentElement;
-
-		smoothScroll = asyncScroll && this.element == document.documentElement;
-
-		reliabilityReport.scroller = smoothScroll ? 'async' : 'sync';
-
-		if ( reliabilityReport.scroller == 'async' ) {
-			reliabilityReport.grade = 'excellent';
-		} else if ( reliabilityReport.timer == 'performance.now' && reliabilityReport.animation == 'requestAnimationFrame' ) {
-			reliabilityReport.grade = 'good';
-		} else {
-			reliabilityReport.grade = 'poor';
+		for ( var i in options ) {
+			this.options[i] = options[i];
 		}
 
-		this.options.scrollDriver = this.options.scrollDriver || ( smoothScroll ? 'smoothScroll' : '' );
+		if ( this.options.loadConfig ) {
+			this._loadConfig();
+			return;
+		}
+
+		this._init();
 	}
 
 	ScrollBench.prototype = {
+		_loadConfig: function () {
+			var that = this;
+			var parseConfig = function () {
+				var i, l;
+				var regex;
+
+				for ( i = 0, l = window.scrollbench_config.pages.length; i < l; i++ ) {
+					regex = new RegExp(window.scrollbench_config.pages[i].url);
+
+					if ( regex.test(window.location.href) ) {
+						for ( var m in window.scrollbench_config.pages[i] ) {
+							that.options[m] = window.scrollbench_config.pages[i][m];
+						}
+
+						break;
+					}
+				}
+
+				that._init();
+			};
+
+			var script = document.createElement('script');
+			script.src = 'https://192.168.123.120/src/config.js';
+			script.addEventListener('load', parseConfig, false);
+			document.getElementsByTagName('head')[0].appendChild(script);
+		},
+
+		_init: function () {
+			var that = this;
+			var smoothScroll;
+
+			if ( this.options.scrollableElementFn ) {
+				this.options.scrollableElementFn(function (el) {
+						that.element = el;
+						that.ready = true;
+					}
+				);
+			} else {
+				this.ready = true;
+				this.element = this.options.element || document.documentElement;
+			}
+
+			smoothScroll = asyncScroll && this.element == document.documentElement;
+
+			reliabilityReport.scroller = smoothScroll ? 'async' : 'sync';
+
+			if ( reliabilityReport.scroller == 'async' ) {
+				reliabilityReport.grade = 'excellent';
+			} else if ( reliabilityReport.timer == 'performance.now' && reliabilityReport.animation == 'requestAnimationFrame' ) {
+				reliabilityReport.grade = 'good';
+			} else {
+				reliabilityReport.grade = 'poor';
+			}
+
+			this.options.scrollDriver = this.options.scrollDriver || ( smoothScroll ? 'smoothScroll' : '' );
+		},
+
 		_startPass: function () {
 			this.pass++;
 
@@ -261,8 +319,11 @@
 		},
 
 		start: function () {
-			var that = this;
-			
+			if ( !this.ready ) {
+				setTimeout(this.start.bind(this), 500);
+				return;
+			}
+
 			this.pass = 0;
 			this.result = {};
 
@@ -297,7 +358,7 @@
 			iframe = iframe.contentWindow || iframe.contentDocument || iframe.document;
 
 			// open
-			out  = '<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" type="text/css" href="http://lab.cubiq.org/scrollbench.js/css/report.css?' + Date.now() + '"></head><body><div id="report">';
+			out  = '<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" type="text/css" href="http://lab.cubiq.org/scrollbench.js/css/report.css"></head><body><div id="report">';
 
 			// header
 			out += '<header><object id="logo" height="100%" data="http://lab.cubiq.org/scrollbench.js/images/scrollbenchjs-logo-anim.svg?stroke=f4f4f4" type="image/svg+xml"></object><h1>Report</h1><div id="moreinfo">? Info</div></header>';
@@ -312,8 +373,6 @@
 			iframe.document.open();
 			iframe.document.write(out);
 			iframe.document.close();
-
-			console.log(this.result)
 		}
 	};
 
