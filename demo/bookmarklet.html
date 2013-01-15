@@ -16,11 +16,11 @@ textarea {
 
 <body>
 
-Add bookmarklet: <!-- bookmarklet --><a href="javascript:(function(){function e(){window.ScrollBench&&(new ScrollBench).start()}if(!window.ScrollBench&&!window.scrollbench_bookmarklet){window.scrollbench_bookmarklet=!0;var c=document.createElement('script');return c.src='https://raw.github.com/cubiq/scrollbench.js/master/src/scrollbench.js',c.addEventListener('load',e,!1),document.getElementsByTagName('head')[0].appendChild(c),void 0}e()})();"><!-- /bookmarklet -->ScrollBench</a>
+Add bookmarklet: <!-- bookmarklet --><a href="javascript:(function(){function e(){window.ScrollBench&&new ScrollBench({loadConfig:!0}).start()}if(!window.ScrollBench&&!window.scrollbench_bookmarklet){window.scrollbench_bookmarklet=!0;var n=document.createElement('script');return n.src='https://sb.cubiq.org/src/scrollbench.js?v'+Date.now(),n.addEventListener('load',e,!1),document.getElementsByTagName('head')[0].appendChild(n),void 0}e()})();"><!-- /bookmarklet -->ScrollBench</a>
 
 <br><br>
 
-<!-- bookmarklet --><textarea>javascript:(function(){function e(){window.ScrollBench&&(new ScrollBench).start()}if(!window.ScrollBench&&!window.scrollbench_bookmarklet){window.scrollbench_bookmarklet=!0;var c=document.createElement("script");return c.src="https://raw.github.com/cubiq/scrollbench.js/master/src/scrollbench.js",c.addEventListener("load",e,!1),document.getElementsByTagName("head")[0].appendChild(c),void 0}e()})();</textarea><!-- /bookmarklet -->
+<!-- bookmarklet --><textarea>javascript:(function(){function e(){window.ScrollBench&&new ScrollBench({loadConfig:!0}).start()}if(!window.ScrollBench&&!window.scrollbench_bookmarklet){window.scrollbench_bookmarklet=!0;var n=document.createElement("script");return n.src="https://sb.cubiq.org/src/scrollbench.js?v"+Date.now(),n.addEventListener("load",e,!1),document.getElementsByTagName("head")[0].appendChild(n),void 0}e()})();</textarea><!-- /bookmarklet -->
 
 </body>
 </html>

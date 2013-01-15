@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Scrollbench.js Report</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<script type="text/javascript">
+
+var report = {};
+function hashToReport () {
+	var el = document.getElementById('report');
+	report = JSON.parse(decodeURIComponent(window.location.hash).substr(1));
+	for ( var i in report ) {
+		el.innerHTML += '<strong>' + i + '</strong>: ' + report[i] + '<br>';
+	}
+}
+
+</script>
+<style type="text/css">
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	padding: 10px;
+	border: 0;
+	background: #fff;
+	color: #222;
+}
+
+</style>
+<body onload="hashToReport()">
+
+Scrollbench.js report
+
+<div id="report"></div>
+</body>
+</html>

@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 (function (window, document) {
+	var CONFIG_URL = 'https://sb.cubiq.org/src/config.js';
+	var REPORT_URL = 'https://sb.cubiq.org/report.html';
+
 	var reliabilityReport = {};
 
 	var now = (function () {
@@ -217,7 +220,7 @@
 			scrollStep: 100,
 			scrollDriver: '',
 			onCompletion: null,
-			loadConfig: true,
+			loadConfig: false,
 			scrollableElementFn: null
 		};
 
@@ -225,26 +228,27 @@
 			this.options[i] = options[i];
 		}
 
-		if ( this.options.loadConfig ) {
-			this._loadConfig();
-			return;
-		}
-
-		this._init();
+		this._loadConfig();
 	}
 
 	ScrollBench.prototype = {
 		_loadConfig: function () {
+			if ( !this.options.loadConfig ) {
+				this._findScrollableElement();
+				return;
+			}
+
 			var that = this;
-			var parseConfig = function () {
-				var i, l;
+
+			function parseConfig () {
+				var i, l, m;
 				var regex;
 
 				for ( i = 0, l = window.scrollbench_config.pages.length; i < l; i++ ) {
 					regex = new RegExp(window.scrollbench_config.pages[i].url);
 
 					if ( regex.test(window.location.href) ) {
-						for ( var m in window.scrollbench_config.pages[i] ) {
+						for ( m in window.scrollbench_config.pages[i] ) {
 							that.options[m] = window.scrollbench_config.pages[i][m];
 						}
 
@@ -252,31 +256,33 @@
 					}
 				}
 
-				that._init();
+				that._findScrollableElement();
 			};
 
 			var script = document.createElement('script');
-			script.src = 'https://192.168.123.120/src/config.js';
+			script.src = typeof this.options.loadConfig == 'string' ? this.options.loadConfig : CONFIG_URL;
 			script.addEventListener('load', parseConfig, false);
 			document.getElementsByTagName('head')[0].appendChild(script);
 		},
 
-		_init: function () {
+		_findScrollableElement: function () {
 			var that = this;
-			var smoothScroll;
 
-			if ( this.options.scrollableElementFn ) {
-				this.options.scrollableElementFn(function (el) {
-						that.element = el;
-						that.ready = true;
-					}
-				);
-			} else {
-				this.ready = true;
-				this.element = this.options.element || document.documentElement;
+			function setElement (el) {
+				that.element = el || that.options.element || document.documentElement;
+				that._getReady();
 			}
 
-			smoothScroll = asyncScroll && this.element == document.documentElement;
+			if ( this.options.scrollableElementFn ) {
+				this.options.scrollableElementFn(setElement);
+				return;
+			}
+
+			setElement();
+		},
+
+		_getReady: function (el) {
+			var smoothScroll = asyncScroll && this.element == document.documentElement;
 
 			reliabilityReport.scroller = smoothScroll ? 'async' : 'sync';
 
@@ -289,6 +295,8 @@
 			}
 
 			this.options.scrollDriver = this.options.scrollDriver || ( smoothScroll ? 'smoothScroll' : '' );
+
+			this.ready = true;
 		},
 
 		_startPass: function () {
@@ -315,6 +323,13 @@
 				return;
 			}
 
+			this.result.reliabilityGrade = reliabilityReport.grade;
+
+			if ( this.options.onCompletion ) {
+				this.options.onCompletion(this.result);
+				return;
+			}
+
 			this._generateReport();
 		},
 
@@ -324,14 +339,24 @@
 				return;
 			}
 
+			this.hideReport();
+
 			this.pass = 0;
 			this.result = {};
 
-			setTimeout(this._startPass.bind(this), 0);
+			setTimeout(this._startPass.bind(this), 100);
 		},
 
 		stop: function () {
 			this.scroller.stop();
+		},
+
+		hideReport: function () {
+			var frame = document.getElementById('scrollbench-report-iframe');
+
+			if ( !frame ) return;
+
+			document.documentElement.removeChild(frame);
 		},
 
 		_updateResult: function () {
@@ -346,15 +371,13 @@
 		},
 
 		_generateReport: function () {
-			var iframe = document.createElement('iframe'),
-				out;
-
+			var iframe = document.createElement('iframe');
 			iframe.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;height:290px;width:100%;padding:0;margin:0;border:0';
-			iframe.border = '0';
-			iframe.width = '100%';
-			iframe.height = '290';
-			document.body.appendChild(iframe);
+			iframe.src = REPORT_URL + '#' + encodeURIComponent(JSON.stringify(this.result));
+			iframe.id = 'scrollbench-report-iframe';
+			document.documentElement.appendChild(iframe);
 
+/*
 			iframe = iframe.contentWindow || iframe.contentDocument || iframe.document;
 
 			// open
@@ -373,6 +396,7 @@
 			iframe.document.open();
 			iframe.document.write(out);
 			iframe.document.close();
+*/
 		}
 	};
 
