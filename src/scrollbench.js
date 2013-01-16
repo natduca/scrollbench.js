@@ -61,8 +61,21 @@
 		return function (callback) { window.setTimeout(callback, 1000 / 60); };
 	})();
 
+
+	// Normalize viewport size for mobile
+/*	function initViewport () {
+		var vp = document.querySelector('meta[name=viewport]');
+		if ( !vp ) {
+			vp = document.createElement('meta');
+			vp.setAttribute('name', 'viewport');
+			document.head.appendChild(vp);
+		}
+		vp.setAttribute('content', 'width=device-width,initial-scale=0.5,maximum-scale=0.5,user-scalable=0');
+	}*/
+
 	var gpuBenchmarking = window.chrome && window.chrome.gpuBenchmarking;
 	var asyncScroll = gpuBenchmarking && window.chrome.gpuBenchmarking.smoothScrollBy;
+
 
 /*
 	RAF Scroller
@@ -147,9 +160,10 @@
 
 			this.timeFrames.push(now());
 
-			if ( this._getScrollPosition().top !== this.scrollY ) {		// browser wasn't able to scroll within 16ms (TODO: double check this!)
+			// Pixel perfection can be activated only if the viewport scale factor is 1, 0.5, 0.25, ...
+/*			if ( this._getScrollPosition().top !== this.scrollY ) {		// browser wasn't able to scroll within 16ms (TODO: double check this!)
 				return;
-			}
+			}*/
 
 			this.scrollY += this.step;
 
@@ -227,6 +241,8 @@
 		for ( var i in options ) {
 			this.options[i] = options[i];
 		}
+
+		//initViewport();
 
 		this._loadConfig();
 	}
@@ -344,7 +360,7 @@
 			this.pass = 0;
 			this.result = {};
 
-			setTimeout(this._startPass.bind(this), 100);
+			setTimeout(this._startPass.bind(this), 1000);
 		},
 
 		stop: function () {
