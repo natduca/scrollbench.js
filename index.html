@@ -18,6 +18,7 @@
 		<li><span>#</span><a href="#documentation" onclick="fancyScrollTo(this.href.split('#')[1]);return false">documentation</a></li>
 		<li><span>#</span><a href="#follow" onclick="fancyScrollTo(this.href.split('#')[1]);return false">follow</a></li>
 	</ul>
+	<a href="javascript:toggleNav()" class="open-nav mobile"><span>#</span>menu</a>
 </header>
 
 <script type="text/javascript">
@@ -33,7 +34,7 @@ var tryme = new ScrollBench();
 		window.msRequestAnimationFrame		||
 		function ( callback ) { window.setTimeout(callback, 1000 / 60); };
 
-	window.addEventListener('scroll', scrolling, false);
+	//window.addEventListener('scroll', scrolling, false);
 	window.addEventListener('DOMMouseScroll', stopScrolling, false);
 	window.addEventListener('mousewheel', stopScrolling, false);
 
@@ -42,8 +43,7 @@ var tryme = new ScrollBench();
 	}
 
 	function scrolling (e) {
-		//rolling = false;
-		//window.removeEventListener('scroll', stopRolling, false);
+
 	};
 
 	function fancyScrollTo (hash) {
@@ -84,13 +84,20 @@ var tryme = new ScrollBench();
 		step();
 	}
 
+	function toggleNav () {
+		var header = document.getElementById('top');
+
+		header.className = /\bactive\b/.test(header.className) ? header.className.replace('active', '') : header.className + ' active';
+	}
+
 	window.fancyScrollTo = fancyScrollTo;
+	window.toggleNav = toggleNav;
 })();
 </script>
 
 <section id="catch" class="catch">
 	<div class="wrapper">
-		<h1><object class="logo" height="60" data="images/scrollbenchjs-logo.svg?color1=222222&amp;animate=1" type="image/svg+xml">Scrollbench.js</object></h1>
+		<h1><object class="logo" data="images/scrollbenchjs-logo.svg?color1=222222&amp;animate=1" type="image/svg+xml">Scrollbench.js</object></h1>
 		<h2>Browser scrolling stress test</h2>
 		<p>Scrollbench.js benchmarks the browsers ability to scroll contents. This helps web designers optimizing HTML &amp; CSS, journalists comparing browser engines, enthusiasts feeding their benchmark thirst.</p>
 
@@ -236,6 +243,7 @@ sb.start();</pre>
 
 <footer id="footer" class="footer">
 	<div class="wrapper">
+		<p><object class="logo" height="18" data="images/scrollbenchjs-logo.svg?color1=555555&amp;color2=999999&amp;animate=1" type="image/svg+xml">Scrollbench.js</object></h1></p>
 		<p><strong>Scrollbench.js</strong>, Copyright (c) 2013 The Chromium Authors<br>Code licensed under the <a href="#">the MIT License</a>. Documentation licensed under <a href="#">CC BY 3.0</a>.</p>
 		<p>Nothing to see here. <a href="#">Move along</a>.</p>
 	</div>

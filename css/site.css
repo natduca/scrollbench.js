@@ -1,3 +1,5 @@
+/* 'border-radius' not allowed! */
+
 @font-face {
 	font-family: 'CPMono_webfont';
 	src: url('fonts/CPMono_v07_Plain-webfont.eot');
@@ -96,7 +98,8 @@ h4 {
 
 h2 span,
 h3 span,
-h4 span {
+h4 span,
+.open-nav span {
 	opacity: 0.5;
 }
 
@@ -110,6 +113,7 @@ pre {
 	margin-bottom: 3em;
 	line-height: 140%;
 	outline: 1px solid rgba(255,255,255,0.18);
+	overflow: hidden;
 }
 
 pre .pre-code {
@@ -173,6 +177,10 @@ section {
 	/*font-size: 0.9em;*/
 }
 
+.mobile {
+	display: none !important;
+}
+
 /* Top navigation bar */
 .top-navigation {
 	position: fixed;
@@ -183,13 +191,12 @@ section {
 	height: 64px;
 	background-color: #000;
 	color: #777;
-	overflow: hidden;
 	font-size: 1.5em;
 	padding: 0;
 }
 
-.top-navigation .wrapper {
-	overflow: hidden;
+.top-navigation ul {
+	height: 64px;
 }
 
 .top-navigation .selected span {
@@ -209,12 +216,14 @@ section {
 .top-navigation ul {
 	display: block;
 	height: 64px;
+	background-color: #000;
 }
 
 .top-navigation .logo {
 	width: 204px;
 	height: 17px;
-	margin-top: 3px;
+	margin-top: 24px;
+	line-height: 1;
 }
 
 .top-navigation li {
@@ -223,6 +232,17 @@ section {
 	height: 64px;
 	line-height: 64px;
 	margin-right: 2em;
+}
+
+.open-nav {
+	position: absolute;
+	right: 4px;
+	top: 4px;
+	height: 56px;
+	line-height: 56px;
+	color: #fff;
+	background-color: #333;
+	padding: 0 1em;
 }
 
 /* Catch screen */
@@ -248,6 +268,7 @@ section {
 
 	background-size: 260px 260px, 260px 80px;
 	background-position: 0 0, 0 0;
+	/* uncomment for magic */
 /*	-webkit-animation: checkeredboard 10s linear infinite;
 	-moz-animation: checkeredboard 10s linear infinite;
 	-o-animation: checkeredboard 10s linear infinite;
@@ -257,6 +278,8 @@ section {
 .catch .logo {
 	display: block;
 	margin: 0 auto;
+	height: 60px;
+	width: auto;
 }
 
 .catch h1 {
@@ -343,7 +366,6 @@ section {
 	background-image:-o-linear-gradient(top, #F3510C, #F3510C 10%, #F65F09 10%, #F65F09 20%, #F96E06 20%, #F96E06 30%, #FB7C03 30%, #FB7C03 40%, #FE8A00 40%);
 	background-image:linear-gradient(top, #F3510C, #F3510C 10%, #F65F09 10%, #F65F09 20%, #F96E06 20%, #F96E06 30%, #FB7C03 30%, #FB7C03 40%, #FE8A00 40%);
 	color: #fff;
-	padding: 6em 0;
 }
 
 .how-it-works a {
@@ -429,6 +451,7 @@ section {
 	}
 }
 
+/* Mostly tablets */
 @media screen and (min-width:481px) and (max-width:840px) {
 	html {
 		font-size: 8px;
@@ -461,5 +484,124 @@ section {
 	.footer .wrapper {
 		background-size: 141px 75px;
 		min-height: 75px;
+	}
+}
+
+/* Mostly smartphones */
+@media only screen and (max-width:480px) {
+	html {
+		font-size: 8px;
+	}
+
+	section {
+		padding: 4em 0;
+	}
+
+	.hash-trick {
+		top: 0;
+	}
+
+	.col {
+		float: none;
+		padding: 0 2.2em;
+	}
+
+	.span6, .span4, .span3, .span2 {
+		width: 100%;
+	}
+
+	.wrapper {
+		width: 100%;
+		overflow: visible;
+	}
+
+	.mobile {
+		display: block !important;
+	}
+
+	.top-navigation {
+		font-size: 1.8em;
+		position: absolute;
+	}
+
+	.top-navigation ul {
+		width: 100%;
+		height: auto;
+	}
+
+	.top-navigation li {
+		margin: -9999px 0 0 0;
+		width: 50%;
+		height: auto;
+		line-height: 1;
+		padding: 1.2em 0;
+		text-align: center;
+		border-top: 1px solid #333;
+		background-color: #000;
+	}
+
+	.top-navigation.active li {
+		margin: 0;
+	}
+
+	.top-navigation li:nth-child(even) {
+		border-right: 1px solid #333;
+	}
+
+	.top-navigation .logo {
+		text-align: left;
+		width: 100%;
+		padding: 0 0 0px 8px;
+		margin: 24px 0 22px 0 !important;
+		border: 0;
+		background-color: #000;
+	}
+
+	.social {
+		display: none;
+	}
+
+	.catch {
+		padding: 4em 0 3em 0;
+	}
+
+	.catch h2 {
+		font-size: 2.2em;
+	}
+
+	.catch .logo {
+		width: 90%;
+		height: auto;
+	}
+
+	.catch .social {
+		width: 100%;
+		height: auto;
+	}
+
+	.catch .social li:first-child {
+		display: none;
+	}
+
+	.catch .social li {
+		text-align: center;
+		width: 33%;
+		height: auto;
+	}
+
+	.quick-start .wrapper {
+		background-image: none;
+	}
+
+	.footer {
+		text-align: center;
+		padding-bottom: 2em;
+	}
+
+	.footer .wrapper {
+		padding: 4em 3em 74px 3em;
+		min-height: auto;
+		background-size: 139px 74px;
+		background-position: 50% 100%;
 	}
 }
