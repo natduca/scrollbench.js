@@ -7,12 +7,18 @@
 </head>
 <script type="text/javascript">
 
-var report = {};
+function sanitize (val) {
+	return val.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
 function hashToReport () {
 	var el = document.getElementById('report');
-	report = JSON.parse(decodeURIComponent(window.location.hash).substr(1));
-	for ( var i in report ) {
-		el.innerHTML += '<strong>' + i + '</strong>: ' + report[i] + '<br>';
+	var value;
+	var report = decodeURIComponent(window.location.hash.substr(1)).split(',');
+console.log(report)
+	for ( var i = 0, l = report.length; i < l; i++ ) {
+		value = report[i].split('=');
+		el.innerHTML += '<strong>' + sanitize(value[0]) + '</strong>: ' + sanitize(value[1]) + '<br>';
 	}
 }
 

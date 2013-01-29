@@ -28,21 +28,7 @@
 
 		reliabilityReport.timer = 'Date getTime';
 		return new Date().getTime();
-
-/*		return perfNow ?
-			perfNow.bind(window.performance) :
-			Date.now ?							// Date.now should be noticeably faster than getTime
-				Date.now :
-				function getTime () { return new Date().getTime(); };
-*/	})();
-
-/*	var rAF = window.requestAnimationFrame	||
-		window.webkitRequestAnimationFrame	||
-		window.mozRequestAnimationFrame		||
-		window.oRequestAnimationFrame		||
-		window.msRequestAnimationFrame		||
-		function (callback) { window.setTimeout(callback, 1000 / 60); };
-*/
+	})();
 
 	var rAF = (function () {
 		var raf = window.requestAnimationFrame	||
@@ -61,21 +47,21 @@
 		return function (callback) { window.setTimeout(callback, 1000 / 60); };
 	})();
 
-
 	// Normalize viewport size for mobile
-/*	function initViewport () {
+	function initViewport () {
 		var vp = document.querySelector('meta[name=viewport]');
+		var scale = 1 / (window.devicePixelRatio || 1);		// pick the best scale factor for the device
+
 		if ( !vp ) {
 			vp = document.createElement('meta');
 			vp.setAttribute('name', 'viewport');
 			document.head.appendChild(vp);
 		}
-		vp.setAttribute('content', 'width=device-width,initial-scale=0.5,maximum-scale=0.5,user-scalable=0');
-	}*/
+		vp.setAttribute('content', 'width=device-width,initial-scale=' + scale + ',maximum-scale=' + scale + ',user-scalable=0');
+	}
 
 	var gpuBenchmarking = window.chrome && window.chrome.gpuBenchmarking;
 	var asyncScroll = gpuBenchmarking && window.chrome.gpuBenchmarking.smoothScrollBy;
-
 
 /*
 	RAF Scroller
@@ -160,8 +146,8 @@
 
 			this.timeFrames.push(now());
 
-			// Pixel perfection can be activated only if the viewport scale factor is 1, 0.5, 0.25, ...
-/*			if ( this._getScrollPosition().top !== this.scrollY ) {		// browser wasn't able to scroll within 16ms (TODO: double check this!)
+			// NOTE: Pixel perfection can be activated only if the viewport scale factor is ..., 2, 1, 0.5, 0.25, ...
+/*			if ( this._getScrollPosition().top !== this.scrollY ) {		// browser wasn't able to scroll within 16ms
 				return;
 			}*/
 
@@ -235,28 +221,31 @@
 			scrollDriver: '',
 			onCompletion: null,
 			loadConfig: false,
-			scrollableElementFn: null
+			scrollableElementFn: null,
+			initViewport: false
 		};
 
 		for ( var i in options ) {
 			this.options[i] = options[i];
 		}
 
-		//initViewport();
+		if ( this.options.initViewport ) {
+			initViewport();
+		}
 
-		this._loadConfig();
+		if ( this.options.loadConfig ) {
+			this._loadConfig();
+			return;
+		}
+		
+		this._findScrollableElement();
 	}
 
 	ScrollBench.prototype = {
 		_loadConfig: function () {
-			if ( !this.options.loadConfig ) {
-				this._findScrollableElement();
-				return;
-			}
-
 			var that = this;
 
-			function parseConfig () {
+			function parseConfig (e) {
 				var i, l, m;
 				var regex;
 
@@ -300,17 +289,20 @@
 		_getReady: function (el) {
 			var smoothScroll = asyncScroll && this.element == document.documentElement;
 
-			reliabilityReport.scroller = smoothScroll ? 'async' : 'sync';
+			this.options.scrollDriver = this.options.scrollDriver || ( smoothScroll ? 'smoothScroll' : '' );
 
-			if ( reliabilityReport.scroller == 'async' ) {
+			// one might want to disable smoothScroll even if the browser supports it (for testing mainly)
+			if ( smoothScroll && this.options.scrollDriver == 'smoothScroll' ) {
+				reliabilityReport.animation = 'async scroll';
+			}
+
+			if ( reliabilityReport.animation == 'async scroll' ) {
 				reliabilityReport.grade = 'excellent';
 			} else if ( reliabilityReport.timer == 'performance.now' && reliabilityReport.animation == 'requestAnimationFrame' ) {
 				reliabilityReport.grade = 'good';
 			} else {
 				reliabilityReport.grade = 'poor';
 			}
-
-			this.options.scrollDriver = this.options.scrollDriver || ( smoothScroll ? 'smoothScroll' : '' );
 
 			this.ready = true;
 		},
@@ -339,7 +331,9 @@
 				return;
 			}
 
-			this.result.reliabilityGrade = reliabilityReport.grade;
+			this.result.resolution = reliabilityReport.grade;
+			this.result.avgTimePerPass = this.result.totalTimeInSeconds / this.pass;
+			//this.result.framesPerSecond = 1000 / (this.result.totalTimeInSeconds / this.result.numAnimationFrames * 1000);
 
 			if ( this.options.onCompletion ) {
 				this.options.onCompletion(this.result);
@@ -368,7 +362,7 @@
 		},
 
 		hideReport: function () {
-			var frame = document.getElementById('scrollbench-report-iframe');
+			var frame = document.getElementById('scrollbench-report-frame');
 
 			if ( !frame ) return;
 
@@ -383,36 +377,22 @@
 				this.result[i] = (this.result[i] || 0) + result[i];
 			}
 
-			this.result.avgTimePerPass = this.result.totalTimeInSeconds / this.pass;
+			//this.result.avgTimePerPass = this.result.totalTimeInSeconds / this.pass;
+			//this.result.framesPerSecond = this.result.totalTimeInSeconds / this.result.numAnimationFrames * 1000;
 		},
 
 		_generateReport: function () {
-			var iframe = document.createElement('iframe');
-			iframe.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;height:290px;width:100%;padding:0;margin:0;border:0';
-			iframe.src = REPORT_URL + '#' + encodeURIComponent(JSON.stringify(this.result));
-			iframe.id = 'scrollbench-report-iframe';
-			document.documentElement.appendChild(iframe);
+			var frame = document.createElement('iframe');
+			var parms = [];
 
-/*
-			iframe = iframe.contentWindow || iframe.contentDocument || iframe.document;
+			for ( var r in this.result ) {
+				parms.push(r + '=' + this.result[r]);
+			}
 
-			// open
-			out  = '<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" type="text/css" href="http://lab.cubiq.org/scrollbench.js/css/report.css"></head><body><div id="report">';
-
-			// header
-			out += '<header><object id="logo" height="100%" data="http://lab.cubiq.org/scrollbench.js/images/scrollbenchjs-logo-anim.svg?stroke=f4f4f4" type="image/svg+xml"></object><h1>Report</h1><div id="moreinfo">? Info</div></header>';
-
-			// main stats
-			out += '<section id="stats"><table><tr><th>Total frames</th><td>' + this.result.numAnimationFrames + '</td></tr><tr><th>Dropped frames</th><td>' + this.result.droppedFrameCount + '</td></tr><tr><th>Total time</th><td>' + this.result.totalTimeInSeconds + '</td></tr><tr><th>Avg time</th><td>' + this.result.avgTimePerPass + '</td></tr><tr><th>Reliability grade</th><td class="reliability ' + reliabilityReport.grade + '">' + reliabilityReport.grade + '</td></tr>';
-			out += '</table></section>';
-
-			// close
-			out += '</div></body></html>';
-
-			iframe.document.open();
-			iframe.document.write(out);
-			iframe.document.close();
-*/
+			frame.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;width:100%;height:290px;padding:0;margin:0;border:0';
+			frame.src = REPORT_URL + '#' + encodeURIComponent(parms.join(','));
+			frame.id = 'scrollbench-report-frame';
+			document.documentElement.appendChild(frame);
 		}
 	};
 
