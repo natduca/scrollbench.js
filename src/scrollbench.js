@@ -4,8 +4,7 @@
 
 (function (window, document) {
 	var CONFIG_URL = 'https://sb.cubiq.org/src/config.js';
-	//var REPORT_URL = 'https://sb.cubiq.org/report.html';
-	var REPORT_URL = 'http://192.168.123.120/scrollbench.js/report.html';
+	var REPORT_URL = 'https://sb.cubiq.org/report.html';
 
 	var reliabilityReport = {};
 
