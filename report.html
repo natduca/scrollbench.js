@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>Scrollbench.js Report</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
-</head>
+
 <script type="text/javascript">
 
 function sanitize (val) {
@@ -12,17 +12,47 @@ function sanitize (val) {
 }
 
 function hashToReport () {
-	var el = document.getElementById('report');
+	var el;
 	var value;
 	var report = decodeURIComponent(window.location.hash.substr(1)).split(',');
-console.log(report)
+
 	for ( var i = 0, l = report.length; i < l; i++ ) {
 		value = report[i].split('=');
-		el.innerHTML += '<strong>' + sanitize(value[0]) + '</strong>: ' + sanitize(value[1]) + '<br>';
+		el = document.getElementById(sanitize(value[0]));
+		if ( el ) {
+			if ( /!/.test(value[1]) ) {
+				el.parentNode.className = 'low';
+				value[1] = value[1].replace('!', '');
+			}
+			el.innerHTML = sanitize(value[1]);
+		}
+
+		if ( value[0] == 'resolution' || value[0] == 'timer' || value[0] == 'animation' ) {
+			el = document.getElementById('info-resolution');
+			el.innerHTML = el.innerHTML.replace('%' + value[0] + '%', value[1]);
+		}
 	}
 }
 
+function toggleInfo (id) {
+	var info = document.getElementById('moreinfo');
+	var rslt = document.getElementById('results');
+
+	if ( id ) {
+		document.getElementById('info-' + id).className = 'show';
+		info.className = 'moreinfo';
+		rslt.className = 'hidden';
+
+		return;
+	}
+
+	document.querySelector('#moreinfo .show').className = '';
+	info.className += ' hidden';
+	rslt.className = '';
+}
+
 </script>
+
 <style type="text/css">
 * {
 	-webkit-box-sizing: border-box;
@@ -34,19 +64,356 @@ html, body {
 	height: 100%;
 }
 
-body {
+body, ul, li, strong, em, p, h1, h2 {
 	margin: 0;
-	padding: 10px;
+	padding: 0;
 	border: 0;
-	background: #fff;
-	color: #222;
+	font-weight: normal;
+	font-style: normal;
 }
 
+ul {
+	list-style: none;
+}
+
+body {
+	background: #000;
+	color: #eee;
+	line-height: 1;
+	font-size: 10px;
+	font-family: helvetica, arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	font-smoothing: antialiased;
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
+h2 {
+	font-weight: bold;
+	font-size: 1.4em;
+	margin-bottom: 0.4em;
+}
+
+p {
+	margin-bottom: 0.5em;
+}
+
+header, section {
+	display: block;
+}
+
+.wrapper {
+	height: 280px;
+	overflow: hidden;
+	background: #303030;
+}
+
+header {
+	display: block;
+	height: 32px;
+	background-color: #000;
+	overflow: hidden;
+}
+
+header .logo {
+	margin: 7px 0 0 8px;
+}
+
+header .close {
+	float: right;
+	height: 32px;
+	line-height: 32px;
+	padding: 0 18px;
+	background-color: #3a3a3a;
+	color: #fff;
+	text-decoration: none;
+	font-size: 1.2em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+}
+
+header .close:hover {
+	background-color: #fe8a00;
+}
+
+.report {
+	padding: 8px;
+	height: 100%;
+	background-color: #e0e0e0;
+	background-image:
+		-webkit-linear-gradient(#2e2e2e, #2e2e2e 15%, #353535 15%, #353535 20%, #222 20%, #222 35%, #1a1a1a 35%, #1a1a1a 40%, #2a2a2a 40%, #2a2a2a 55%, #1f1f1f 55%, #1f1f1f 55%, #222 55%, #222 70%, #1a1a1a 70%);
+	background-image:
+		-moz-linear-gradient(#2e2e2e, #2e2e2e 15%, #353535 15%, #353535 20%, #222 20%, #222 35%, #1a1a1a 35%, #1a1a1a 40%, #2a2a2a 40%, #2a2a2a 55%, #1f1f1f 55%, #1f1f1f 55%, #222 55%, #222 70%, #1a1a1a 70%);
+	background-image:
+		-ms-linear-gradient(#2e2e2e, #2e2e2e 15%, #353535 15%, #353535 20%, #222 20%, #222 35%, #1a1a1a 35%, #1a1a1a 40%, #2a2a2a 40%, #2a2a2a 55%, #1f1f1f 55%, #1f1f1f 55%, #222 55%, #222 70%, #1a1a1a 70%);
+	background-image:
+		-o-linear-gradient(#2e2e2e, #2e2e2e 15%, #353535 15%, #353535 20%, #222 20%, #222 35%, #1a1a1a 35%, #1a1a1a 40%, #2a2a2a 40%, #2a2a2a 55%, #1f1f1f 55%, #1f1f1f 55%, #222 55%, #222 70%, #1a1a1a 70%);
+	background-image:
+		linear-gradient(#2e2e2e, #2e2e2e 15%, #353535 15%, #353535 20%, #222 20%, #222 35%, #1a1a1a 35%, #1a1a1a 40%, #2a2a2a 40%, #2a2a2a 55%, #1f1f1f 55%, #1f1f1f 55%, #222 55%, #222 70%, #1a1a1a 70%);
+
+	background-position: 0 0, 0 0;
+}
+
+.report ul {
+	display: block;
+	max-width: 1088px;
+	margin: 0 auto;
+}
+
+.report li {
+	display: block;
+	float: left;
+	width: 124px;
+	background-image: -webkit-linear-gradient(-45deg, transparent, transparent 6%, #777 6%);
+	background-image: -moz-linear-gradient(-45deg, transparent, transparent 6%, #777 6%);
+	background-image: -ms-linear-gradient(-45deg, transparent, transparent 6%, #777 6%);
+	background-image: -o-linear-gradient(-45deg, transparent, transparent 6%, #777 6%);
+	background-image: linear-gradient(135deg, transparent, transparent 6%, #777 6%);
+
+	text-align: center;
+	padding: 12px 6px;
+	box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+	text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+
+	margin-right: 12px;
+	margin-bottom: 12px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.report li:last-child {
+	margin-right: 0;
+}
+
+.report em {
+	display: block;
+	text-transform: uppercase;
+	font-size: 1.2em;
+}
+
+.report strong {
+	display: block;
+	font-size: 2.5em;
+	margin-bottom: 0.2em;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.report .good {
+	background-image: -webkit-linear-gradient(-45deg, transparent, transparent 6%, #499D20 6%);
+	background-image: -moz-linear-gradient(-45deg, transparent, transparent 6%, #499D20 6%);
+	background-image: -ms-linear-gradient(-45deg, transparent, transparent 6%, #499D20 6%);
+	background-image: -o-linear-gradient(-45deg, transparent, transparent 6%, #499D20 6%);
+	background-image: linear-gradient(135deg, transparent, transparent 6%, #499D20 6%);
+}
+
+.report .medium {
+	background-image: -webkit-linear-gradient(-45deg, transparent, transparent 6%, #EB9024 6%);
+	background-image: -moz-linear-gradient(-45deg, transparent, transparent 6%, #EB9024 6%);
+	background-image: -ms-linear-gradient(-45deg, transparent, transparent 6%, #EB9024 6%);
+	background-image: -o-linear-gradient(-45deg, transparent, transparent 6%, #EB9024 6%);
+	background-image: linear-gradient(135deg, transparent, transparent 6%, #EB9024 6%);
+}
+
+.report .low {
+	background-image: -webkit-linear-gradient(-45deg, transparent, transparent 6%, #DF502D 6%);
+	background-image: -moz-linear-gradient(-45deg, transparent, transparent 6%, #DF502D 6%);
+	background-image: -ms-linear-gradient(-45deg, transparent, transparent 6%, #DF502D 6%);
+	background-image: -o-linear-gradient(-45deg, transparent, transparent 6%, #DF502D 6%);
+	background-image: linear-gradient(135deg, transparent, transparent 6%, #DF502D 6%);
+}
+
+.report .help {
+	overflow: visible;
+	white-space: normal;
+	text-align: center;
+	font-size: 1.5em;
+	background-image: -webkit-linear-gradient(-45deg, transparent, transparent 6%, #1B7DFF 6%);
+	background-image: -moz-linear-gradient(-45deg, transparent, transparent 6%, #1B7DFF 6%);
+	background-image: -ms-linear-gradient(-45deg, transparent, transparent 6%, #1B7DFF 6%);
+	background-image: -o-linear-gradient(-45deg, transparent, transparent 6%, #1B7DFF 6%);
+	background-image: linear-gradient(135deg, transparent, transparent 6%, #1B7DFF 6%);
+}
+
+.moreinfo {
+	width: auto;
+	background-color: #5a5a5a;
+	font-size: 1.4em;
+	padding: 12px;
+	white-space: normal;
+	text-align: left;
+	line-height: 130%;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+}
+
+.moreinfo div {
+	display: none;
+}
+
+.moreinfo .back {
+	display: block;
+	margin: 0 auto;
+	width: 100px;
+	padding: 6px 2px 6px 0px;
+	background: #fe8a00;
+	text-align: center;
+	text-decoration: none;
+	color: #fff;
+	text-transform: uppercase;
+	box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+}
+
+.hidden {
+	display: none !important;
+}
+
+.show {
+	display: block !important;
+}
+
+/* Mostly smartphones */
+@media only screen and (min-width:421px) and (max-width:568px) {
+	.report ul {
+		max-width: 400px;
+	}
+
+	.report li:nth-child(3n+3) {
+		margin-right: 0;
+	}
+}
+
+@media only screen and (max-width:420px) {
+	body {
+		font-size: 8px;
+	}
+
+	.report ul {
+		max-width: 320px;
+	}
+
+	.report li {
+		width: 148px;
+		padding: 8px 0;
+		margin-right: 8px;
+		margin-bottom: 10px;
+	}
+
+	.report li:nth-child(even) {
+		margin-right: 0;
+	}
+
+	.moreinfo {
+		font-size: 1.6em;
+	}
+
+	.moreinfo .back {
+		width: 100%;
+	}
+
+	.nomobile {
+		display: none !important;
+	}
+}
 </style>
+</head>
+
 <body onload="hashToReport()">
 
-<strong>Scrollbench.js report</strong>
+<div class="wrapper">
+	<header>
+		<object class="logo" height="18" data="images/scrollbenchjs-logo.svg?animate=1" type="image/svg+xml">Scrollbench.js</object>
+		<a href="#" class="close">× close</a>
+	</header>
 
-<div id="report"></div>
+	<section class="report" id="report">
+		<ul id="results">
+			<li class="help">Select a value to get related info</li>
+
+			<li>
+				<strong id="resolution" onclick="toggleInfo(this.id)"></strong>
+				<em>resolution</em>
+			</li>
+
+			<li>
+				<strong id="numAnimationFrames" onclick="toggleInfo(this.id)"></strong>
+				<em>frames</em>
+			</li>
+
+
+			<li>
+				<strong id="droppedFrameCount" onclick="toggleInfo(this.id)"></strong>
+				<em>dropped</em>
+			</li>
+
+
+			<li>
+				<strong id="totalTimeInSeconds" onclick="toggleInfo(this.id)"></strong>
+				<em>time</em>
+			</li>
+
+			<li>
+				<strong id="avgTimePerPass" onclick="toggleInfo(this.id)"></strong>
+				<em>time/pass</em>
+			</li>
+
+			<li>
+				<strong id="scrollHeight" onclick="toggleInfo(this.id)"></strong>
+				<em>travel</em>
+			</li>
+
+			<li>
+				<strong id="framesPerSecond" onclick="toggleInfo(this.id)"></strong>
+				<em>FPS</em>
+			</li>
+		</ul>
+
+		<div id="moreinfo" class="moreinfo hidden">
+			<div id="info-resolution">
+				<h2>Resolution</h2>
+				<p>This value shows the resolution the test can be performed against your specific browser/device. Medium resolution is considered good enough for reliable results.</p>
+				
+				<p class="nomobile">High is just for browsers that supports asynchronous scrolling (ie: Chrome with gpuBenchmarking as of now).</p>
+				
+				<p>Your value is <b>%resolution%</b> because we use <b>%animation%</b> for animation and <b>%timer%</b> as a timer.</p>
+			</div>
+
+			<div id="info-numAnimationFrames">
+				<h2>Frames</h2>
+				<p>The total number of frames needed to perform the scrolling animation.</p>
+			</div>
+
+			<div id="info-droppedFrameCount">
+				<h2>Dropped</h2>
+				<p>The number of dropped frames. If the browser is unable to catch up with the scrolling animation you may skip a frame. Ideally you'd want 0 (zero) dropped frames, meaning that the animation went buttery smooth; in reality a couple of frames are often needed (hence dropped) to 'warm up' the browser. A value lower than the 10% of the total frame count is auspicable.</p>
+			</div>
+
+			<div id="info-totalTimeInSeconds">
+				<h2>Time</h2>
+				<p>The animation runtime. This is the duration of all whole animation, ie: the sum of all the passes. The default number of passes is 2, meaning that the page is scrolled from top to bottom two times.</p>
+			</div>
+
+			<div id="info-avgTimePerPass">
+				<h2>Time/Pass</h2>
+				<p>The average duration of each pass, this is simply calculated by dividing the total duration by the number of passes. The default number of passes is 2, meaning that the page is scrolled from top to bottom two times.</p>
+			</div>
+
+			<div id="info-scrollHeight">
+				<h2>Travel</h2>
+				<p>This is the distance in pixels that the page has to scroll to reach the bottom of the page. This value is calculated subtracting the page height to the scrollHeight.</p>
+			</div>
+
+			<div id="info-framesPerSecond">
+				<h2>FPS</h2>
+				<p>This is a guesstimate of the average Frames Per Second the animation has being performed at. Ideally the animation should run at the same refresh rate of the device monitor (normally 60hz). An FPS lower than 50 throws a warning.</p>
+			</div>
+
+			<a href="javascript:toggleInfo()" class="back">« back</a>
+		</div>
+
+	</section>
+</div>
+
 </body>
 </html>

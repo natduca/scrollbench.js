@@ -4,7 +4,8 @@
 
 (function (window, document) {
 	var CONFIG_URL = 'https://sb.cubiq.org/src/config.js';
-	var REPORT_URL = 'https://sb.cubiq.org/report.html';
+	//var REPORT_URL = 'https://sb.cubiq.org/report.html';
+	var REPORT_URL = 'http://192.168.123.120/scrollbench.js/report.html';
 
 	var reliabilityReport = {};
 
@@ -297,11 +298,11 @@
 			}
 
 			if ( reliabilityReport.animation == 'async scroll' ) {
-				reliabilityReport.grade = 'excellent';
+				reliabilityReport.resolution = 'high';
 			} else if ( reliabilityReport.timer == 'performance.now' && reliabilityReport.animation == 'requestAnimationFrame' ) {
-				reliabilityReport.grade = 'good';
+				reliabilityReport.resolution = 'medium';
 			} else {
-				reliabilityReport.grade = 'poor';
+				reliabilityReport.resolution = 'low!';
 			}
 
 			this.ready = true;
@@ -331,9 +332,22 @@
 				return;
 			}
 
-			this.result.resolution = reliabilityReport.grade;
+			this.result.resolution = reliabilityReport.resolution;
+			this.result.timer = reliabilityReport.timer;
+			this.result.animation = reliabilityReport.animation;
 			this.result.avgTimePerPass = this.result.totalTimeInSeconds / this.pass;
-			//this.result.framesPerSecond = 1000 / (this.result.totalTimeInSeconds / this.result.numAnimationFrames * 1000);
+			this.result.framesPerSecond = 1000 / (this.result.totalTimeInSeconds / this.result.numAnimationFrames * 1000);
+			this.result.scrollHeight = this.scroller.element.scrollHeight - this.scroller.clientHeight;
+
+			// add warnings
+			if ( this.result.droppedFrameCount > this.result.numAnimationFrames / 10 ) {
+				this.result.droppedFrameCount += '!';
+			}
+
+			if ( this.result.framesPerSecond < 50 ) {
+				this.result.framesPerSecond += '!';
+			}
+
 
 			if ( this.options.onCompletion ) {
 				this.options.onCompletion(this.result);
@@ -389,7 +403,7 @@
 				parms.push(r + '=' + this.result[r]);
 			}
 
-			frame.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;width:100%;height:290px;padding:0;margin:0;border:0';
+			frame.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;width:100%;height:280px;padding:0;margin:0;border:0';
 			frame.src = REPORT_URL + '#' + encodeURIComponent(parms.join(','));
 			frame.id = 'scrollbench-report-frame';
 			document.documentElement.appendChild(frame);
