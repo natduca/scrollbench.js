@@ -369,12 +369,14 @@ section {
 }
 
 .how-it-works a {
+	display: inline-block;
 	font-weight: bold;
 	color: #fe8a00;
 	background-color: #fff;
-	padding: 0 0.2em;
+	padding: 0.1em 0.3em;
 	text-decoration: none;
 	white-space: nowrap;
+	box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
 }
 
 .how-it-works a:hover {
@@ -397,6 +399,21 @@ section {
 	border-bottom: 1px dashed rgba(255,255,255,0.3);
 	padding-bottom: 2em;
 	margin-bottom: 2em;
+}
+
+.bookmarklet-button {
+	display: inline-block;
+	background: #fe8a00;
+	color: #fff;
+	text-decoration: none;
+	padding: 0.1em 0.3em;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.4);
+	box-shadow: 3px 3px 0 #262626;
+}
+
+.bookmarklet-button:hover {
+	background: #000;
+	color: #fff;
 }
 
 
@@ -572,6 +589,11 @@ section {
 	.catch .logo {
 		width: 90%;
 		height: auto;
+	}
+
+	.catch p {
+		padding: 0 1em;
+		text-align: left;
 	}
 
 	.catch .social {

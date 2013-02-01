@@ -410,12 +410,12 @@
 				parms.push(r + '=' + this.result[r]);
 			}
 
-			frame.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;width:100%;height:280px;padding:0;margin:0;border:0';
+			frame.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;width:100%;height:270px;padding:0;margin:0;border:0';
 			frame.src = REPORT_URL + '#' + encodeURIComponent(parms.join(','));
 			frame.id = 'scrollbench-report-frame';
 			document.documentElement.appendChild(frame);
 
-			close.style.cssText = 'position:fixed;z-index:2147483641;bottom:248px;right:0;width:88px;height:32px;padding:0;margin:0;border:0;background:transparent;cursor:pointer';
+			close.style.cssText = 'position:fixed;z-index:2147483641;bottom:238px;right:0;width:88px;height:32px;padding:0;margin:0;border:0;background:transparent;cursor:pointer';
 			close.id = 'scrollbench-close';
 			close.onclick = this.closeReport.bind(this);
 			document.documentElement.appendChild(close);
