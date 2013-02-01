@@ -1,10 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright (c) 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (function (window, document) {
 	var CONFIG_URL = 'https://sb.cubiq.org/src/config.js';
-	var REPORT_URL = 'https://sb.cubiq.org/report.html';
+	var REPORT_URL = '//sb.cubiq.org/report.html';
 
 	var reliabilityReport = {};
 
@@ -297,9 +297,9 @@
 			}
 
 			if ( reliabilityReport.animation == 'async scroll' ) {
-				reliabilityReport.resolution = 'high';
+				reliabilityReport.resolution = 'high+';
 			} else if ( reliabilityReport.timer == 'performance.now' && reliabilityReport.animation == 'requestAnimationFrame' ) {
-				reliabilityReport.resolution = 'medium';
+				reliabilityReport.resolution = 'medium-';
 			} else {
 				reliabilityReport.resolution = 'low!';
 			}
@@ -341,10 +341,18 @@
 			// add warnings
 			if ( this.result.droppedFrameCount > this.result.numAnimationFrames / 10 ) {
 				this.result.droppedFrameCount += '!';
+			} else if ( this.result.droppedFrameCount > this.result.numAnimationFrames / 20 ) {
+				this.result.droppedFrameCount += '-';
+			} else {
+				this.result.droppedFrameCount += '+';
 			}
 
 			if ( this.result.framesPerSecond < 50 ) {
 				this.result.framesPerSecond += '!';
+			} else if ( this.result.framesPerSecond < 56 ) {
+				this.result.framesPerSecond += '-';
+			} else {
+				this.result.framesPerSecond += '+';
 			}
 
 
@@ -362,7 +370,7 @@
 				return;
 			}
 
-			this.hideReport();
+			this.closeReport();
 
 			this.pass = 0;
 			this.result = {};
@@ -374,12 +382,14 @@
 			this.scroller.stop();
 		},
 
-		hideReport: function () {
+		closeReport: function () {
 			var frame = document.getElementById('scrollbench-report-frame');
 
 			if ( !frame ) return;
 
 			document.documentElement.removeChild(frame);
+
+			document.documentElement.removeChild(document.getElementById('scrollbench-close'));
 		},
 
 		_updateResult: function () {
@@ -389,13 +399,11 @@
 			for ( i in result ) {
 				this.result[i] = (this.result[i] || 0) + result[i];
 			}
-
-			//this.result.avgTimePerPass = this.result.totalTimeInSeconds / this.pass;
-			//this.result.framesPerSecond = this.result.totalTimeInSeconds / this.result.numAnimationFrames * 1000;
 		},
 
 		_generateReport: function () {
 			var frame = document.createElement('iframe');
+			var close = document.createElement('i');	// using an element less prone to aggressive styling
 			var parms = [];
 
 			for ( var r in this.result ) {
@@ -406,8 +414,21 @@
 			frame.src = REPORT_URL + '#' + encodeURIComponent(parms.join(','));
 			frame.id = 'scrollbench-report-frame';
 			document.documentElement.appendChild(frame);
+
+			close.style.cssText = 'position:fixed;z-index:2147483641;bottom:248px;right:0;width:88px;height:32px;padding:0;margin:0;border:0;background:transparent;cursor:pointer';
+			close.id = 'scrollbench-close';
+			close.onclick = this.closeReport.bind(this);
+			document.documentElement.appendChild(close);
 		}
 	};
+
+	ScrollBench.closeReport = function () {
+		var frame = document.getElementById('scrollbench-report-frame');
+
+		if ( !frame ) return;
+
+		document.documentElement.removeChild(frame);
+	}
 
 window.ScrollBench = ScrollBench;
 
