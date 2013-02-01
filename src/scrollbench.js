@@ -60,6 +60,29 @@
 		vp.setAttribute('content', 'width=device-width,initial-scale=' + scale + ',maximum-scale=' + scale + ',user-scalable=0');
 	}
 
+	function getBoundingVisibleRect (el) {
+		var rect = el.getBoundingClientRect();
+/*		var rect = {
+				top: bound.top,
+				left: bound.left,
+				width: bound.width,
+				height: bound.height
+			};
+*/
+		var outsideHeight = rect.top + rect.height - window.innerHeight;
+		var outsideWidth = rect.left + rect.width - window.innerWidth;
+
+		if ( outsideHeight > 0 ) {
+			rect.height -= outsideHeight;
+		}
+
+		if ( outsideWidth > 0 ) {
+			rect.width -= outsideWidth;
+		}
+
+		return rect;
+	}
+
 	var gpuBenchmarking = window.chrome && window.chrome.gpuBenchmarking;
 	var asyncScroll = gpuBenchmarking && window.chrome.gpuBenchmarking.smoothScrollBy;
 
@@ -167,6 +190,7 @@
 	gpuBenchmarking Stats
 */
 	function SmoothScroller () {
+
 	}
 
 	SmoothScroller.prototype = {
@@ -181,9 +205,14 @@
 		},
 
 		start: function (element, callback) {
-			var step = element.scrollHeight - element.clientHeight,
-				that = this;
+			var step = element.scrollHeight - element.clientHeight;
+			var rect = getBoundingVisibleRect(element);
+			var that = this;
 
+			this.clientHeight = element.clientHeight;
+			this.element = element;
+
+			// this wouldn't be strictly needed as Chrome scrolls the document with scrollTop
 			if ( element == document.documentElement ) {
 				window.scrollTo(0, 0);
 			} else {
@@ -194,7 +223,7 @@
 			chrome.gpuBenchmarking.smoothScrollBy(step, function () {
 				that.finalStat = that._step();
 				callback();
-			});
+			}, rect.left + Math.round(rect.width / 2), rect.top + Math.round(rect.height / 2));
 		},
 
 		stop: function () {
@@ -287,7 +316,7 @@
 		},
 
 		_getReady: function (el) {
-			var smoothScroll = asyncScroll && this.element == document.documentElement;
+			var smoothScroll = !!asyncScroll;// && this.element == document.documentElement;
 
 			this.options.scrollDriver = this.options.scrollDriver || ( smoothScroll ? 'smoothScroll' : '' );
 
@@ -355,7 +384,6 @@
 				this.result.framesPerSecond += '+';
 			}
 
-
 			if ( this.options.onCompletion ) {
 				this.options.onCompletion(this.result);
 				return;
@@ -366,7 +394,7 @@
 
 		start: function () {
 			if ( !this.ready ) {
-				setTimeout(this.start.bind(this), 500);
+				setTimeout(this.start.bind(this), 250);
 				return;
 			}
 
@@ -422,14 +450,6 @@
 		}
 	};
 
-	ScrollBench.closeReport = function () {
-		var frame = document.getElementById('scrollbench-report-frame');
-
-		if ( !frame ) return;
-
-		document.documentElement.removeChild(frame);
-	}
-
-window.ScrollBench = ScrollBench;
+	window.ScrollBench = ScrollBench;
 
 })(window, document);
