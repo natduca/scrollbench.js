@@ -62,13 +62,7 @@
 
 	function getBoundingVisibleRect (el) {
 		var rect = el.getBoundingClientRect();
-/*		var rect = {
-				top: bound.top,
-				left: bound.left,
-				width: bound.width,
-				height: bound.height
-			};
-*/
+
 		var outsideHeight = rect.top + rect.height - window.innerHeight;
 		var outsideWidth = rect.left + rect.width - window.innerWidth;
 
@@ -251,6 +245,7 @@
 			onCompletion: null,
 			loadConfig: false,
 			scrollableElementFn: null,
+			waitForFn: null,
 			initViewport: false
 		};
 
@@ -267,12 +262,17 @@
 			return;
 		}
 		
-		this._findScrollableElement();
+		this._waitForContent();
 	}
 
 	ScrollBench.prototype = {
 		_loadConfig: function () {
 			var that = this;
+
+			var script = document.createElement('script');
+			script.src = typeof this.options.loadConfig == 'string' ? this.options.loadConfig : CONFIG_URL;
+			script.addEventListener('load', parseConfig, false);
+			document.getElementsByTagName('head')[0].appendChild(script);
 
 			function parseConfig (e) {
 				var i, l, m;
@@ -290,13 +290,30 @@
 					}
 				}
 
-				that._findScrollableElement();
-			};
+				script.removeEventListener('load', parseConfig, false);		// be kind, rewind
 
-			var script = document.createElement('script');
-			script.src = typeof this.options.loadConfig == 'string' ? this.options.loadConfig : CONFIG_URL;
-			script.addEventListener('load', parseConfig, false);
-			document.getElementsByTagName('head')[0].appendChild(script);
+				that._waitForContent();
+			};
+		},
+
+		_waitForContent: function () {
+			var that = this;
+
+			function waitingGame () {
+				if ( that.options.waitForFn() ) {
+					that._findScrollableElement();
+					return;
+				}
+
+				setTimeout(waitingGame, 50);
+			}
+
+			if ( typeof this.options.waitForFn == 'function' ) {
+				waitingGame();
+				return;
+			}
+
+			this._findScrollableElement();
 		},
 
 		_findScrollableElement: function () {
@@ -316,7 +333,7 @@
 		},
 
 		_getReady: function (el) {
-			var smoothScroll = !!asyncScroll;// && this.element == document.documentElement;
+			var smoothScroll = !!asyncScroll;
 
 			this.options.scrollDriver = this.options.scrollDriver || ( smoothScroll ? 'smoothScroll' : '' );
 
@@ -443,6 +460,7 @@
 			frame.id = 'scrollbench-report-frame';
 			document.documentElement.appendChild(frame);
 
+			// Close button is on the same parent page to avoid cross-domain errors
 			close.style.cssText = 'position:fixed;z-index:2147483641;bottom:238px;right:0;width:88px;height:32px;padding:0;margin:0;border:0;background:transparent;cursor:pointer';
 			close.id = 'scrollbench-close';
 			close.onclick = this.closeReport.bind(this);
