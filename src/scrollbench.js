@@ -98,8 +98,9 @@
 			return result;
 		},
 
-		start: function (element, callback, step) {
+		start: function (element, travel, step, callback) {
 			this.element = element;
+			this.travel = travel;
 			this.callback = callback;
 			this.step = step;
 
@@ -113,8 +114,6 @@
 			}
 
 			this.rolling = true;
-			this.scrollY = 0;
-			this.clientHeight = this.isDocument ? window.innerHeight : this.element.clientHeight;
 
 			rAF(this._step.bind(this));
 		},
@@ -152,7 +151,9 @@
 		},
 
 		_step: function (timestamp) {
-			if ( this.clientHeight + this.scrollY >= this.element.scrollHeight ) {
+			var scrollTop = this._getScrollPosition().top;
+
+			if ( this.travel - scrollTop <= 0 ) {
 				this.rolling = false;
 				this.callback();
 			}
@@ -163,17 +164,12 @@
 
 			this.timeFrames.push(now());
 
-			// NOTE: Pixel perfection can be activated only if the viewport scale factor is ..., 2, 1, 0.5, 0.25, ...
-/*			if ( this._getScrollPosition().top !== this.scrollY ) {		// browser wasn't able to scroll within 16ms
-				return;
-			}*/
-
-			this.scrollY += this.step;
+			scrollTop += this.step;
 
 			if ( this.isDocument ) {
-				window.scrollTo(0, this.scrollY);
+				window.scrollTo(0, scrollTop);
 			} else {
-				this.element.scrollTop = this.scrollY;
+				this.element.scrollTop = scrollTop;
 			}
 		}
 	};
@@ -198,13 +194,11 @@
 			return result;
 		},
 
-		start: function (element, callback) {
-			var step = element.scrollHeight - element.clientHeight;
+		start: function (element, travel, step, callback) {
 			var rect = getBoundingVisibleRect(element);
 			var that = this;
 
-			this.clientHeight = element.clientHeight;
-			this.element = element;
+			step = travel;
 
 			// this wouldn't be strictly needed as Chrome scrolls the document with scrollTop
 			if ( element == document.documentElement ) {
@@ -364,8 +358,9 @@
 
 			this.scroller.start(
 				this.element,
-				this._endPass.bind(this),
-				this.options.scrollStep
+				this.travel,
+				this.options.scrollStep,
+				this._endPass.bind(this)
 			);
 		},
 
@@ -382,7 +377,7 @@
 			this.result.animation = reliabilityReport.animation;
 			this.result.avgTimePerPass = this.result.totalTimeInSeconds / this.pass;
 			this.result.framesPerSecond = 1000 / (this.result.totalTimeInSeconds / this.result.numAnimationFrames * 1000);
-			this.result.scrollHeight = this.scroller.element.scrollHeight - this.scroller.clientHeight;
+			this.result.travel = this.travel;
 
 			// add warnings
 			if ( this.result.droppedFrameCount > this.result.numAnimationFrames / 10 ) {
@@ -419,8 +414,9 @@
 
 			this.pass = 0;
 			this.result = {};
+			this.travel = this.element.scrollHeight - (this.element == document.documentElement ? window.innerHeight : this.element.clientHeight);
 
-			setTimeout(this._startPass.bind(this), 1000);
+			setTimeout(this._startPass.bind(this), 100);
 		},
 
 		stop: function () {
