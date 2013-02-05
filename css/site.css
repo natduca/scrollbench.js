@@ -18,7 +18,7 @@ h1, h2, h3, h4,
 	font-weight: normal;
 }
 
-pre, code {
+pre, code, textarea {
 	font-style: menlo, consolas, monaco, 'courier new', monospace;
 }
 
@@ -28,7 +28,7 @@ pre, code {
 	box-sizing: border-box;
 }
 
-body, ul, ol, li, h1, h2, h3, h4, object, p, pre, img {
+body, ul, ol, li, h1, h2, h3, h4, object, p, pre, img, textarea {
 	padding: 0;
 	margin: 0;
 	border: 0;
@@ -114,6 +114,16 @@ pre {
 	line-height: 140%;
 	outline: 1px solid rgba(255,255,255,0.18);
 	overflow: hidden;
+}
+
+textarea {
+	background-color: rgba(255,255,255,0.1);
+	outline: 1px solid rgba(255,255,255,0.18);
+	color: #f6f6f6;
+	width: 100%;
+	height: 10em;
+	padding: 0.5em;
+	font-size: 0.8em;
 }
 
 pre .pre-code {
@@ -463,9 +473,7 @@ section {
 
 /* Make text slightly bigger on very large screens (27+) */
 @media only screen and (min-device-width:2560px) {
-	body {
-		font-size: 1.1em;
-	}
+
 }
 
 /* Mostly tablets */
