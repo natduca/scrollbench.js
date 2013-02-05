@@ -224,12 +224,14 @@ sb.start();</pre>
 				<p>SBJS accepts one paramenter for special configuration. The parameter must be an object and the accepted values are:</p>
 
 				<ol>
-					<li><a href="#options-element" onclick="fancyScrollTo(this.href.split('#')[1]);return false">element:</a> reference to a node object. SBJS can scroll both the whole page or a DOM element. Default: <code>document.documentElement</code>.</li>
-					<li><a href="#options-initViewport" onclick="fancyScrollTo(this.href.split('#')[1]);return false">initViewport:</a> boolean. If <code>true</code> the viewport is set to initial scale 1.0. Default: <code>false</code>.</li>
-					<li><a href="#options-iterations" onclick="fancyScrollTo(this.href.split('#')[1]);return false">iterations:</a> an integer representing the number on passes to perform. Minimum suggested and default: <code>2</code>.</li>
-					<li><a href="#">scrollStep:</a> integer value. In case of synchronous scroll, the amount of pixels to scroll per cycle. Default: <code>100</code></li>
-					<li>...</li>
-					<li>...</li>
+					<li><strong>element:</strong> reference to a node object. SBJS can scroll both the whole page or a DOM element. Default: <code>document.documentElement</code>.</li>
+					<li><strong>initViewport:</strong> boolean. If <code>true</code> the viewport is set to initial scale 1.0. Default: <code>false</code>.</li>
+					<li><strong>iterations:</strong> an integer representing the number of passes to perform. Minimum suggested and default: <code>2</code>.</li>
+					<li><strong>loadConfig:</strong> boolean or string. Loads per site configurations from either the default config file or an user defined file. Default: <code>2</code>.</li>
+					<li><strong>onCompletion:</strong> function. Returns the results to a custom function. Default: <code>null</code></li>
+					<li><strong>scrollableElementFn:</strong> function. Function to be executed to find the scrollable element. Default: <code>null</code></li>
+					<li><strong>scrollStep:</strong> integer value. In case of synchronous scroll, the amount of pixels to scroll per cycle. Default: <code>100</code></li>
+					<li><strong>waitForFn:</strong> function. Holds back the benchmark execution until the passed function returns true. Default: <code>null</code></li>
 				</ol>
 			</div>
 		</div>
@@ -262,9 +264,9 @@ sb.start();</pre>
 			</div>
 		</div>
 
-		<div class="wrapper">
+		<div class="wrapper div">
 			<div class="col span4">
-				<h4 id="options-iterations"><span>#Options:</span>Iterations</h4>
+				<h4 id="options-iterations"><span>#Options:</span>iterations</h4>
 				<p>Performs the test 5 times instead of the default 2:</p>
 				<pre><span class="pre-code">javascript</span>new ScrollBench({
 	iterations: 5
@@ -272,9 +274,108 @@ sb.start();</pre>
 			</div>
 
 			<div class="col span2 small">
-				<p>For maximum reliability the test is performed 2 times by default, but this value can be raised for even higher resolution. The browser often needs a "warm up" period to reach the highest performance level, so the first pass has sometimes a lower performance rate.</p>
+				<p>For better reliability the test is performed 2 times by default, but this value can be raised for higher resolution. The browser often needs a "warm up" period to reach the highest performance level, so the first pass has sometimes a lower performance rate.</p>
 			</div>
 		</div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-loadConfig"><span>#Options:</span>loadConfig</h4>
+				<p>Loads the default per site config file</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+	loadConfig: true
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>Any of the SBJS options can be passed on a per site basis from an user defined configuration file. By default no file is loaded, passing <code>true</code> SBJS loads the <a href="src/config.js">default config</a>. You may alternatively pass an URL the configuration file is loaded from.</p>
+
+				<p>The configuration is a javascript file that sets the <code>scrollbench_config</code> variable. See the <a href="src/config.js">default config</a> for reference.</p>
+
+				<p>Note that the bookmarklet loads the default config file but it's not the default SBJS behavior.</p>
+			</div>
+		</div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-onCompletion"><span>#Options:</span>onCompletion</h4>
+				<p>Bypasses the default report and simply shows an alert box with the results:</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+	onCompletion: function (result) {
+		alert(JSON.stringify(result, null, ' '))
+	}
+}).start();</pre>
+				<p>The parameter returned by the function has the following keys:</p>
+				<p><code>numAnimationFrames</code>: total number of frames of the animation<br>
+					<code>droppedFrameCount</code>: number of frames dropped (ie: performed with low frame rate)<br>
+					<code>totalTimeInSeconds</code>: runtime<br>
+					<code>resolution</code>: test reliability based on browser specs<br>
+					<code>timer</code>: timer used for the test<br>
+					<code>animation</code>: technology used to perform the animation<br>
+					<code>avgTimePerPass</code>: average time needed for each pass<br>
+					<code>framesPerSecond</code>: frames per second the animation is performed at (estimated)<br>
+					<code>travel</code>: pixels travelled by the animation</p>
+				<p>A value can be followed by a <code>!</code>, <code>-</code> or <code>+</code> meaning respectively: bad, average, good result.</p>
+			</div>
+
+			<div class="col span2 small">
+				<p>The results are shown by default in an overlaying iFrame, you may want to pass them to a custom function for further inspection. The results will be passed as first parameter to the specified fuction. The default internal report is not executed.</p>
+			</div>
+		</div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-scrollableElementFn"><span>#Options:</span>scrollableElementFn</h4>
+				<p>Tricky code to get the scrollable element on Gmail:</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+    scrollableElementFn: function (callback) {
+        gmonkey.load('2.0',
+            function (api) {
+                callback(api.getScrollableElement());
+            }
+        );
+    }
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>In some circumstances it's not possible to foresee the element that should be scrolled. In those cases we can rely on a custom function. The element must be sent as first parameter of a callback function.</p>
+			</div>
+		</div>
+
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-scrollStep"><span>#Options:</span>scrollStep</h4>
+				<p>Increase the number of frames by reducing the scrolling step from the default 100 to 50:</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+	scrollStep: 50
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>The scrolling is normally performed with a 100 pixels step. Each step is a frame. You may want to increase of decrease the number of frames by altering the scrollStep.</p>
+
+				<p>Note: this value is ignored in case of asyncronous scroll.</p>
+			</div>
+		</div>
+
+		<div class="wrapper">
+			<div class="col span4">
+				<h4 id="options-waitForFn"><span>#Options:</span>waitForFn</h4>
+				<p>Wait for the element <code>waitForMe</code> to be loaded before starting the benchmark.</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+    waitForFn: function () {
+        return document.getElementById('waitForMe');
+    }
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>The passed function is executed repeatedely until it doesn't returs <code>true</code>. When it is finally <code>true</code>, the benchmark begins.</p>
+			</div>
+		</div>
+
 	</div>
 </section>
 
