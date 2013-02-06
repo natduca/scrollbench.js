@@ -13,10 +13,10 @@
 <header id="top" role="navigation" class="top-navigation">
 	<ul class="wrapper">
 		<li class="logo"><a href="index.html#top" onclick="fancyScrollTo(this.href.split('#')[1]);return false"><img src="images/scrollbenchjs-logo.svg" width="204" height="17" alt="scrollbench.js"></a></li>
-		<li><span>#</span><a href="#how-it-works" onclick="fancyScrollTo(this.href.split('#')[1]);return false">how it works</a></li>
+		<li><span>#</span><a href="#how-it-works" onclick="fancyScrollTo(this.href.split('#')[1]);return false">about</a></li>
 		<li><span>#</span><a href="#quick-start" onclick="fancyScrollTo(this.href.split('#')[1]);return false">quick start</a></li>
+		<li><span>#</span><a href="#best-practices" onclick="fancyScrollTo(this.href.split('#')[1]);return false">best practices</a></li>
 		<li><span>#</span><a href="#documentation" onclick="fancyScrollTo(this.href.split('#')[1]);return false">documentation</a></li>
-		<li><span>#</span><a href="#follow" onclick="fancyScrollTo(this.href.split('#')[1]);return false">follow</a></li>
 	</ul>
 	<a href="javascript:toggleNav()" class="open-nav mobile"><span>#</span>menu</a>
 </header>
@@ -127,11 +127,13 @@ var tryme = new ScrollBench();
 	<div class="wrapper">
 		<div class="col span3">
 			<h2><span>#</span>About</h2>
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p>There are many browser benchmarks out there, Scrollbench.js tells you how good your browser is at scrolling. This might seem trivial but it's actually a good way to measure a website weight.</p>
+			<p>Complex DOM structure and sophisticated styling require more resources and the simple scroll action forces the browser to re-render the page contents. Hence a benchmark that checks the browser ability to scroll is actually a benchmark that tests the browser ability to draw elements in their respective styling.</p>
 		</div>
 		<div class="col span3">
-			<h2><span>#</span>How it works</h2>
-			<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. <a href="#quick-start" onclick="fancyScrollTo(this.href.split('#')[1]);return false">Start using it</a></p>
+			<h2><span>#</span>What is it for?</h2>
+			<p>Scrollbench is a good way to compare browser engines. Testing the same page on different browsers gives you an idea of how good each engine is. Digging a bit deeper you should be able to identify which element or which style property is more difficult for your browser.</p>
+			<p>This might be a good starting point for browser vendors to identify their product deficencies and a quick way for designers to check their work weight.</p>
 		</div>
 	</div>
 </section>
@@ -176,8 +178,7 @@ sb.start();</pre>
 
 			<p>On iPhone save the bookmark, then open the bookmarks panel and edit the bookmark you just added. You are now able to modify the site address. Replace the address with the bookmarklet code and voilà!</p>
 
-			<p>You can now call the Scrollbench on any site by simply selecting the bookmark.</p>
-
+			<p class="div">You can now call the Scrollbench on any site by simply selecting the bookmark.</p>
 		</div>
 		<div class="col span2">
 			<h3><span>#</span>Test reliability</h3>
@@ -193,6 +194,18 @@ sb.start();</pre>
 
 			<p>Confused? Worry not. At the end of the test you'll get a report about the browser capabilities and benchmark resolution.</p>
 
+		</div>
+	</div>
+</section>
+
+<section class="best-practices">
+	<span id="best-practices" class="hash-trick"></span>
+	<div class="wrapper">
+		<div class="col">
+			<h2><span>#</span>Best practices</h2>
+			<p>It is important to note that you shouldn't compare browsers that support different set of technologies. The benchmark is performed using the best API we can find on the platform, but a browser that supports <code>requestAnimationFrame</code> will have very different results compared to one that only supports <code>setTimeout</code>.</p>
+			<p>For this reason at the end of the test you'll get an index which defines the browser "resolution". Presently we have 3 resolutions: High, Medium and Low. You should be comparing browsers at the same resolution index only. Clicking on the Resolution value you'll also get a more detailed report of the technologies used to perform the benchmark.</p>
+			<p><strong>Don't mix apples and oranges!</strong></p>
 		</div>
 	</div>
 </section>
@@ -292,7 +305,7 @@ sb.start();</pre>
 
 				<p>The configuration is a javascript file that sets the <code>scrollbench_config</code> variable. See the <a href="src/config.js">default config</a> for reference.</p>
 
-				<p>Note that the bookmarklet loads the default config file but it's not the default SBJS behavior.</p>
+				<p>Note that the bookmarklet loads the default config file but this is not the default SBJS behavior.</p>
 			</div>
 		</div>
 
