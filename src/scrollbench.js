@@ -451,6 +451,11 @@
 				parms.push(r + '=' + this.result[r]);
 			}
 
+			// bugfix with overlaying iframe not getting events focus on Android
+			if ( (/android/gi).test(navigator.appVersion) && this.element == document.documentElement ) {
+				window.scrollTo(0, 0);
+			}
+
 			frame.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;width:100%;height:270px;padding:0;margin:0;border:0';
 			frame.src = REPORT_URL + '#' + encodeURIComponent(parms.join(','));
 			frame.id = 'scrollbench-report-frame';

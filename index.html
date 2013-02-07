@@ -34,7 +34,6 @@ var tryme = new ScrollBench();
 		window.msRequestAnimationFrame		||
 		function ( callback ) { window.setTimeout(callback, 1000 / 60); };
 
-	//window.addEventListener('scroll', scrolling, false);
 	window.addEventListener('DOMMouseScroll', stopScrolling, false);
 	window.addEventListener('mousewheel', stopScrolling, false);
 
@@ -42,12 +41,12 @@ var tryme = new ScrollBench();
 		isAutoScrolling = false;
 	}
 
-	function scrolling (e) {
-
-	};
-
 	function fancyScrollTo (hash) {
-		stopScrolling();
+		if ( isAutoScrolling ) {
+			stopScrolling();
+			setTimeout(fancyScrollTo.bind(this, hash), 50);
+			return;
+		}
 
 		el = document.getElementById(hash);
 		var destination = el.offsetTop;
@@ -59,7 +58,7 @@ var tryme = new ScrollBench();
 		var startTime = Date.now();
 		var start = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
 		var left = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft)
-		var duration = 1.1 * Math.abs(destination - start);
+		var duration = Math.abs(destination - start);
 
 		function step () {
 			var now = Date.now();
