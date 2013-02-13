@@ -153,6 +153,21 @@ section {
 	padding: 5em 0;
 }
 
+.clearfix {
+	*zoom: 1;
+}
+
+.clearfix:before,
+.clearfix:after {
+	display: table;
+	line-height: 0;
+	content: "";
+}
+
+.clearfix:after {
+	clear: both;
+}
+
 .hash-trick {
 	position: absolute;
 	top: -64px;
@@ -164,6 +179,7 @@ section {
 	width: 960px;
 	margin: 0 auto;
 	overflow: auto;
+	clear: both;
 }
 
 .col {
@@ -405,8 +421,7 @@ section {
 }
 
 .quick-start .wrapper {
-	background: url(../images/browsers.png) 100% 100% no-repeat;
-	background-size: 349px 209px;
+	padding: 0 60px;
 }
 
 .div {
@@ -437,9 +452,6 @@ section {
 	color: #fff;
 }
 
-.best-practices .wrapper {
-	padding: 0 60px;
-}
 
 /* documentation */
 .documentation {
@@ -596,10 +608,6 @@ section {
 		background-color: #000;
 	}
 
-	.social {
-		display: none;
-	}
-
 	.catch {
 		padding: 4em 0 3em 0;
 	}
@@ -621,6 +629,8 @@ section {
 	.catch .social {
 		width: 100%;
 		height: auto;
+		float: none;
+		clear: both;
 	}
 
 	.catch .social li:first-child {
@@ -629,7 +639,9 @@ section {
 
 	.catch .social li {
 		text-align: center;
-		width: 33%;
+		float: none;
+		clear: both;
+		width: 100%;
 		height: auto;
 	}
 
@@ -637,7 +649,7 @@ section {
 		background-image: none;
 	}
 
-	.best-practices .wrapper {
+	.quick-start .wrapper {
 		padding: 0;
 	}
 

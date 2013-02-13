@@ -14,8 +14,8 @@
 	<ul class="wrapper">
 		<li class="logo"><a href="index.html#top" onclick="fancyScrollTo(this.href.split('#')[1]);return false"><img src="images/scrollbenchjs-logo.svg" width="204" height="17" alt="scrollbench.js"></a></li>
 		<li><span>#</span><a href="#how-it-works" onclick="fancyScrollTo(this.href.split('#')[1]);return false">about</a></li>
-		<li><span>#</span><a href="#quick-start" onclick="fancyScrollTo(this.href.split('#')[1]);return false">quick start</a></li>
 		<li><span>#</span><a href="#best-practices" onclick="fancyScrollTo(this.href.split('#')[1]);return false">best practices</a></li>
+		<li><span>#</span><a href="#quick-start" onclick="fancyScrollTo(this.href.split('#')[1]);return false">quick start</a></li>
 		<li><span>#</span><a href="#documentation" onclick="fancyScrollTo(this.href.split('#')[1]);return false">documentation</a></li>
 	</ul>
 	<a href="javascript:toggleNav()" class="open-nav mobile"><span>#</span>menu</a>
@@ -137,12 +137,36 @@ var tryme = new ScrollBench();
 	</div>
 </section>
 
+<section class="best-practices">
+	<span id="best-practices" class="hash-trick"></span>
+	<div class="wrapper">
+		<div class="col span3">
+			<h2><span>#</span>Best practices</h2>
+			<p>It is important to note that you shouldn't compare browsers that support different set of technologies. The benchmark is performed using the best API we can find on the platform, but a browser that supports <code>requestAnimationFrame</code> will have very different results compared to one that only has <code>setTimeout</code>.</p>
+			<p>For this reason at the end of the test you'll get an index which defines the browser <em>"resolution"</em>.</p>
+			<p>Presently we have 3 resolutions: <strong>High</strong>, <strong>Medium</strong> and <strong>Low</strong>. You should be comparing browsers at the same resolution index only. Clicking on the Resolution value in the report you'll also get a detailed list of the technologies used to perform the benchmark.</p>
+			<p><strong>Don't mix apples and oranges!</strong></p>
+		</div>
+		<div class="col span3">
+			<h2><span>#</span>Test reliability</h2>
+			<p>The more sophisticated your browser the more reliable the benchmark. On de/r-ecent browsers we can rely on <a href="http://www.w3.org/TR/animation-timing/">requestAnimationFrame</a> which grants the test a good resolution but that's only a part of the equation. We also need a high definition timer. A good candidate in this case would be <code>performance.now</code>.</p>
+
+			<p>So if you have both, the test result is considered <strong>reliable</strong>.</p>
+
+			<p>If one feature is missing we fall back to the closest alternative, which in case of <code>requestAnimationFrame</code> is <code>setTimeout</code> (notoriously a low definition timer).</p>
+
+			<p>For the test to be 100% reliable we would need support for <strong>asyncronous scrolling</strong>. Unfortunately that's an unofficial API with very little browser support (even though <a href="http://www.w3.org/wiki/Web_Performance/Charter#Async_scroll">something is moving</a> in that direction). Async scrolling is a way for the browser to simulate the page scrolling like it was performed by a real person.</p>
+
+			<p>As of this writing the only browser to support async scrolling is Chrome... With a caveat. You have to enable gpu benchmarking first. To do so, execute chrome from the command line with the <code>--enable-gpu-benchmarking</code> option.</p>
+		</div>
+	</div>
+</section>
+
 <section class="quick-start">
 	<span id="quick-start" class="hash-trick"></span>
-	<div class="wrapper">
-		<div class="col span6"><h2><span>#</span>Quick start</h2></div>
-
-		<div class="col span4">
+	<div class="wrapper clearfix">
+		<div class="col">
+			<h2><span>#</span>Quick start</h2>
 			<p>The easiest way to use Scrollbench.js is through the bookmarklet.</p>
 			
 			<ol class="steps div">
@@ -167,7 +191,7 @@ sb.start();</pre>
 			<p class="div">For advanced usage see the <a href="#documentation" onclick="fancyScrollTo(this.href.split('#')[1]);return false">documentation</a>.</p>
 
 			<h3><span>#</span>Mobile</h3>
-			<p>Scrollbench loves mobile, too. (Unfortunately mobile doesn't love him back in fact... ) The procedure to install the bookmarklet on mobile is a bit convulsed. Follow me closely.</p>
+			<p>Scrollbench loves mobile, too. (Unfortunately mobile doesn't love him back, in fact... ) The procedure to install the bookmarklet on mobile is a bit convulsed. Follow me closely.</p>
 
 			<p>Copy the bookmarklet code to the clipboard.</p>
 
@@ -177,34 +201,7 @@ sb.start();</pre>
 
 			<p>On iPhone save the bookmark, then open the bookmarks panel and edit the bookmark you just added. You are now able to modify the site address. Replace the address with the bookmarklet code and voilà!</p>
 
-			<p class="div">You can now call the Scrollbench on any site by simply selecting the bookmark.</p>
-		</div>
-		<div class="col span2">
-			<h3><span>#</span>Test reliability</h3>
-			<p>The more sophisticated your browser the more reliable the benchmark. On de/r-ecent browsers we can rely on <a href="http://www.w3.org/TR/animation-timing/">requestAnimationFrame</a> which grants the test a good resolution but that's only a part of the equation. We also need a high definition timer. A good candidate in this case would be <code>performance.now</code>.</p>
-
-			<p>So if you have both, the test result is considered <strong>reliable</strong>.</p>
-
-			<p>If one feature is missing we fall back to the closest alternative, which in case of <code>requestAnimationFrame</code> is <code>setTimeout</code> (notoriously a low definition timer).</p>
-
-			<p>For the test to be 100% reliable we would need the browser to support <strong>asyncronous scrolling</strong>. Unfortunately that's an unofficial API with very little browser support (even though <a href="http://www.w3.org/wiki/Web_Performance/Charter#Async_scroll">something is moving</a> in that direction). Async scrolling is a way for the browser to simulate the page scrolling like it was performed by a real person.</p>
-
-			<p>As of this writing the only browser to support async scrolling is Chrome... With a caveat. You have to enable gpu benchmarking first. To do so, execute chrome from the command line with the <code>--enable-gpu-benchmarking</code> option.</p>
-
-			<p>Confused? Worry not. At the end of the test you'll get a report about the browser capabilities and benchmark resolution.</p>
-
-		</div>
-	</div>
-</section>
-
-<section class="best-practices">
-	<span id="best-practices" class="hash-trick"></span>
-	<div class="wrapper">
-		<div class="col">
-			<h2><span>#</span>Best practices</h2>
-			<p>It is important to note that you shouldn't compare browsers that support different set of technologies. The benchmark is performed using the best API we can find on the platform, but a browser that supports <code>requestAnimationFrame</code> will have very different results compared to one that only supports <code>setTimeout</code>.</p>
-			<p>For this reason at the end of the test you'll get an index which defines the browser "resolution". Presently we have 3 resolutions: High, Medium and Low. You should be comparing browsers at the same resolution index only. Clicking on the Resolution value you'll also get a more detailed report of the technologies used to perform the benchmark.</p>
-			<p><strong>Don't mix apples and oranges!</strong></p>
+			<p>You can now call the Scrollbench on any site by simply selecting the bookmark.</p>
 		</div>
 	</div>
 </section>

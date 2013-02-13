@@ -1,6 +1,11 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+/**
+ * ScrollBench.js - Browser Scroll Benchmark
+ * @author Matteo Spinelli <matteo@cubiq.org>
+ *
+ * Copyright (c) 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 
 (function (window, document) {
 	var CONFIG_URL = 'https://sb.cubiq.org/src/config.js';
@@ -80,10 +85,11 @@
 	var gpuBenchmarking = window.chrome && window.chrome.gpuBenchmarking;
 	var asyncScroll = gpuBenchmarking && window.chrome.gpuBenchmarking.smoothScrollBy;
 
-/*
-	RAF Scroller
-	RAF Stats
-*/
+
+/**
+ * RAFScroller, requestAnimationFrame driver
+ * @constructor
+ */
 	function RAFScroller () {
 	}
 
@@ -102,7 +108,7 @@
 			this.element = element;
 			this.travel = travel;
 			this.callback = callback;
-			this.step = step;
+			this.step = step; 
 
 			this.timeFrames = [];
 			this.isDocument = this.element == document.documentElement;
@@ -175,10 +181,11 @@
 	};
 
 
-/*
-	smoothScrollBy Scroller
-	gpuBenchmarking Stats
-*/
+/**
+ * SmoothScroller, scroll driver using smoothScrollBy for scrolling
+ * and gpuBenchmarking Stats
+ * @constructor
+ */
 	function SmoothScroller () {
 
 	}
@@ -226,8 +233,12 @@
 		}
 	};
 
-///////////////////////////
 
+/**
+ * ScrollBench
+ * @param {Object} options Configure the benchmark
+ * @constructor
+ */
 	function ScrollBench (options) {
 		this.ready = false;
 
