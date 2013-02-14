@@ -175,6 +175,19 @@ var tryme = new ScrollBench();
 				<li>There's no three</li>
 			</ol>
 
+			<h3><span>#</span>Mobile</h3>
+			<p>Scrollbench loves mobile, too. (Unfortunately mobile doesn't love him back, in fact... ) The procedure to install the bookmarklet on mobile is a bit convulsed. Follow me closely.</p>
+
+			<p>Copy the bookmarklet code to the clipboard.</p>
+
+			<p><textarea><!-- bookmarklet --><a class="bookmarklet-button" href="javascript:(function(){function e(){window.ScrollBench&&new ScrollBench({loadConfig:!0}).start()}if(!window.ScrollBench&&!window.scrollbench_bookmarklet){window.scrollbench_bookmarklet=!0;var n=document.createElement('script');return n.src='https://sb.cubiq.org/src/scrollbench.js?v'+Date.now(),n.addEventListener('load',e,!1),document.getElementsByTagName('head')[0].appendChild(n),void 0}e()})();"><!-- /bookmarklet --></textarea></p>
+
+			<p>Now add this site to the bookmarks. If you are on Android, lucky you! You can alter the URL field right away. Replace the site address with the content of the clipboard and save. If you are on iPhone, read on.</p>
+
+			<p>On iPhone save the bookmark, then open the bookmarks panel and edit the bookmark you just added. You are now able to modify the site address. Replace the address with the bookmarklet code and voilà!</p>
+
+			<p class="div">You can now call the Scrollbench on any site by simply selecting the bookmark.</p>
+
 			<h3><span>#</span>Like the coders do</h3>
 			<p>For a deeper integration you should include the script into your projects like so:</p>
 			
@@ -190,18 +203,9 @@ sb.start();</pre>
 
 			<p class="div">For advanced usage see the <a href="#documentation" onclick="fancyScrollTo(this.href.split('#')[1]);return false">documentation</a>.</p>
 
-			<h3><span>#</span>Mobile</h3>
-			<p>Scrollbench loves mobile, too. (Unfortunately mobile doesn't love him back, in fact... ) The procedure to install the bookmarklet on mobile is a bit convulsed. Follow me closely.</p>
+			<h3><span>#</span>Designer's best friend</h3>
+			<p>Scrollbench.js can be an invaluable tool for web designers, too. You can benchmark your layout performance and spot its weaknesses. If you notice too many dropped frames and low frame rate, it might be time to rethink your design. Try to temporarly hide some elements and run the test again until you find the culprit. It can be tedious but there's no price for a well optimized web site (especially on mobile).</p>
 
-			<p>Copy the bookmarklet code to the clipboard.</p>
-
-			<p><textarea><!-- bookmarklet --><a class="bookmarklet-button" href="javascript:(function(){function e(){window.ScrollBench&&new ScrollBench({loadConfig:!0}).start()}if(!window.ScrollBench&&!window.scrollbench_bookmarklet){window.scrollbench_bookmarklet=!0;var n=document.createElement('script');return n.src='https://sb.cubiq.org/src/scrollbench.js?v'+Date.now(),n.addEventListener('load',e,!1),document.getElementsByTagName('head')[0].appendChild(n),void 0}e()})();"><!-- /bookmarklet --></textarea></p>
-
-			<p>Now add this site to the bookmarks. If you are on Android, lucky you! You can alter the URL field right away. Replace the site address with the content of the clipboard and save. If you are on iPhone, read on.</p>
-
-			<p>On iPhone save the bookmark, then open the bookmarks panel and edit the bookmark you just added. You are now able to modify the site address. Replace the address with the bookmarklet code and voilà!</p>
-
-			<p>You can now call the Scrollbench on any site by simply selecting the bookmark.</p>
 		</div>
 	</div>
 </section>
