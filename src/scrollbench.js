@@ -271,6 +271,12 @@
 	}
 
 	ScrollBench.prototype = {
+		handleEvent: function (e) {
+			if ( e.type == 'scroll' ) {
+				this._scrollCheck(e);
+			}
+		},
+
 		_loadConfig: function () {
 			var that = this;
 
@@ -427,7 +433,14 @@
 			this.result = {};
 			this.travel = this.element.scrollHeight - (this.element == document.documentElement ? window.innerHeight : this.element.clientHeight);
 
+			if ( this.travel <= this.options.scrollStep ) {
+				alert('Scroll travel too short. No benchmark performed.');
+				return;
+			}
+
 			setTimeout(this._startPass.bind(this), 100);
+			this.controlTimer = setTimeout(this._scrollFailed.bind(this), 2100);
+			(this.element == document.documentElement ? window : this.element).addEventListener('scroll', this, false);
 		},
 
 		stop: function () {
@@ -442,6 +455,17 @@
 			document.documentElement.removeChild(frame);
 
 			document.documentElement.removeChild(document.getElementById('scrollbench-close'));
+		},
+
+		_scrollCheck: function () {
+			clearTimeout(this.controlTimer);
+			(this.element == document.documentElement ? window : this.element).removeEventListener('scroll', this, false);
+		},
+
+		_scrollFailed: function () {
+			this.stop();
+			(this.element == document.documentElement ? window : this.element).removeEventListener('scroll', this, false);
+			alert('Sorry, we weren\'t able to perform the test. Please report the culprit site to the ScrollBench team.');
 		},
 
 		_updateResult: function () {
