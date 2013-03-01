@@ -85,6 +85,15 @@
 	var gpuBenchmarking = window.chrome && window.chrome.gpuBenchmarking;
 	var asyncScroll = gpuBenchmarking && window.chrome.gpuBenchmarking.smoothScrollBy;
 
+	var pageLoaded = true;
+	if ( document.readyState != 'complete' ) {
+		pageLoaded = false;
+		window.addEventListener('load', loaded, false);
+		function loaded () {
+			window.removeEventListener('load', loaded, false);
+			pageLoaded = true;
+		}
+	}
 
 /**
  * RAFScroller, requestAnimationFrame driver
@@ -156,8 +165,10 @@
 			};
 		},
 
-		_step: function (timestamp) {
+		_step: function () {
 			var scrollTop = this._getScrollPosition().top;
+			// check travel at every iteration, this covers possible DOM changes while scrolling
+			this.travel = this.element.scrollHeight - (this.isDocument ? window.innerHeight : this.element.clientHeight);
 
 			if ( this.travel - scrollTop <= 0 ) {
 				this.rolling = false;
@@ -279,13 +290,9 @@
 
 		_loadConfig: function () {
 			var that = this;
+			var script;
 
-			var script = document.createElement('script');
-			script.src = typeof this.options.loadConfig == 'string' ? this.options.loadConfig : CONFIG_URL;
-			script.addEventListener('load', parseConfig, false);
-			document.getElementsByTagName('head')[0].appendChild(script);
-
-			function parseConfig (e) {
+			function parseConfig () {
 				var i, l, m;
 				var regex;
 
@@ -301,10 +308,22 @@
 					}
 				}
 
-				script.removeEventListener('load', parseConfig, false);		// be kind, rewind
+				if ( script ) {
+					script.removeEventListener('load', parseConfig, false);		// be kind, rewind
+				}
 
 				that._waitForContent();
-			};
+			}
+
+			if ( window.scrollbench_config ) {
+				parseConfig();
+				return;
+			}
+
+			script = document.createElement('script');
+			script.src = typeof this.options.loadConfig == 'string' ? this.options.loadConfig : CONFIG_URL;
+			script.addEventListener('load', parseConfig, false);
+			document.getElementsByTagName('head')[0].appendChild(script);
 		},
 
 		_waitForContent: function () {
@@ -422,8 +441,8 @@
 		},
 
 		start: function () {
-			if ( !this.ready ) {
-				setTimeout(this.start.bind(this), 250);
+			if ( !pageLoaded || !this.ready ) {
+				setTimeout(this.start.bind(this), 100);
 				return;
 			}
 
@@ -431,6 +450,7 @@
 
 			this.pass = 0;
 			this.result = {};
+
 			this.travel = this.element.scrollHeight - (this.element == document.documentElement ? window.innerHeight : this.element.clientHeight);
 
 			if ( this.travel <= this.options.scrollStep ) {
