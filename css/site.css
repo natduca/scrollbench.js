@@ -430,7 +430,7 @@ section {
 	margin-bottom: 2em;
 }
 
-.bookmarklet-button {
+li.bookmarklet-button a {
 	display: inline-block;
 	background: #fe8a00;
 	color: #fff;
@@ -440,7 +440,7 @@ section {
 	box-shadow: 3px 3px 0 #262626;
 }
 
-.bookmarklet-button:hover {
+li.bookmarklet-button:hover a {
 	background: #000;
 	color: #fff;
 }

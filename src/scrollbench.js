@@ -168,7 +168,7 @@
 		_step: function () {
 			var scrollTop = this._getScrollPosition().top;
 			// check travel at every iteration, this covers possible DOM changes while scrolling
-			this.travel = Math.min(this.travel, this.element.scrollHeight - (this.isDocument ? window.innerHeight : this.element.clientHeight));
+			this.travel = Math.min(this.travel, this.element.scrollHeight - (this.isDocument ? window.innerHeight : this.element.clientHeight) - 1);
 
 			if ( this.travel - scrollTop <= 0 ) {
 				this.rolling = false;
