@@ -86,14 +86,17 @@
 	var asyncScroll = gpuBenchmarking && window.chrome.gpuBenchmarking.smoothScrollBy;
 
 	var pageLoaded = true;
+
+	function loaded () {
+		window.removeEventListener('load', loaded, false);
+		pageLoaded = true;
+	}
+
 	if ( document.readyState != 'complete' ) {
 		pageLoaded = false;
 		window.addEventListener('load', loaded, false);
-		function loaded () {
-			window.removeEventListener('load', loaded, false);
-			pageLoaded = true;
-		}
 	}
+
 
 /**
  * RAFScroller, requestAnimationFrame driver
