@@ -53,9 +53,9 @@
 	})();
 
 	// Normalize viewport size for mobile
-	function initViewport () {
+	function initViewport (scale) {
 		var vp = document.querySelector('meta[name=viewport]');
-		var scale = 1 / (window.devicePixelRatio || 1);		// pick the best scale factor for the device
+		scale = scale || 1; //(1 / (window.devicePixelRatio || 1));
 
 		if ( !vp ) {
 			vp = document.createElement('meta');
@@ -63,6 +63,24 @@
 			document.head.appendChild(vp);
 		}
 		vp.setAttribute('content', 'width=device-width,initial-scale=' + scale + ',maximum-scale=' + scale + ',user-scalable=0');
+	}
+
+	// Get the scale factor of the current page
+	function getScale () {
+		var screenWidth = screen.width;
+
+		// probably not a mobile devide
+		if ( screen.width > document.documentElement.clientWidth ) {
+			return 1;
+		}
+
+		if ( window.orientation%180 ) {		// landscape
+			if ( screen.width < screen.height ) screenWidth = screen.height;
+		} else {							// portrait
+			if ( screen.width > screen.height ) screenWidth = screen.height;
+		}
+
+		return screenWidth / window.innerWidth;
 	}
 
 	function getBoundingVisibleRect (el) {
@@ -507,6 +525,10 @@
 
 			for ( var r in this.result ) {
 				parms.push(r + '=' + this.result[r]);
+			}
+
+			if ( getScale() < 0.8 ) {
+				initViewport();
 			}
 
 			// bugfix with overlaying iframe not getting events focus on Android
