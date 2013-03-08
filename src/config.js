@@ -14,6 +14,12 @@
 			);
 		}
 	});
+	
+	// Acko
+	config.pages.push({
+		url: '^http://acko.net',
+		element: document.querySelector('.content-holder')
+	});
 
 	window.scrollbench_config = config;
 })();
