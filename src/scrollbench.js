@@ -427,7 +427,6 @@
 			if ( this.pass < this.options.iterations ) {
 				var delay = this.pass == 1 ? 2000 : 100;
 				setTimeout(this._startPass.bind(this), delay);
-				//this._startPass();
 				return;
 			}
 
