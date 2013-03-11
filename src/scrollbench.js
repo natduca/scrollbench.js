@@ -425,7 +425,9 @@
 			this._updateResult();
 
 			if ( this.pass < this.options.iterations ) {
-				this._startPass();
+				var delay = this.pass == 1 ? 2000 : 100;
+				setTimeout(this._startPass.bind(this), delay);
+				//this._startPass();
 				return;
 			}
 
@@ -484,9 +486,9 @@
 				return;
 			}
 
-			setTimeout(this._startPass.bind(this), 100);
 			this.controlTimer = setTimeout(this._scrollFailed.bind(this), 2100);
-			(this.element == document.documentElement || document.body ? window : this.element).addEventListener('scroll', this, false);
+			(this.element == document.documentElement || this.element == document.body ? window : this.element).addEventListener('scroll', this, false);
+			setTimeout(this._startPass.bind(this), 100);
 		},
 
 		stop: function () {
