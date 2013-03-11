@@ -472,6 +472,11 @@
 			this.pass = 0;
 			this.result = {};
 
+			// check if we should benchmark <html> or <body>
+			if ( this.element == document.documentElement && document.documentElement.scrollHeight < document.body.scrollHeight ) {
+				this.element = document.body;
+			}
+
 			this.travel = this.element.scrollHeight - (this.element == document.documentElement ? window.innerHeight : this.element.clientHeight);
 
 			if ( this.travel <= this.options.scrollStep ) {
@@ -481,7 +486,7 @@
 
 			setTimeout(this._startPass.bind(this), 100);
 			this.controlTimer = setTimeout(this._scrollFailed.bind(this), 2100);
-			(this.element == document.documentElement ? window : this.element).addEventListener('scroll', this, false);
+			(this.element == document.documentElement || document.body ? window : this.element).addEventListener('scroll', this, false);
 		},
 
 		stop: function () {
