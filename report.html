@@ -34,6 +34,10 @@ function hashToReport () {
 			value[1] = sanitize(value[1]);
 			if ( +value[1] ) value[1] = Math.round(+value[1] * 1000) / 1000;
 			el.innerHTML = value[1];
+
+			if ( value[0] == 'worstTime' ) {
+				el.innerHTML += 'ms';
+			}
 		}
 
 		if ( value[0] == 'resolution' || value[0] == 'timer' || value[0] == 'animation' ) {
@@ -493,8 +497,11 @@ header .close {
 			</span></li>
 
 			<li><span class="valign">
-				<strong onclick="toggleInfo(this.children[0].id)"><span id="framesPerSecond"></span></strong>
-				<em>FPS</em>
+				<strong class="twolines" onclick="toggleInfo(this.children[0].id)">
+					<span id="framesPerSecond"></span>
+					<span class="small">Worst <span id="worstTime"></span>
+					<em>FPS</em>
+				</strong>
 			</span></li>
 		</ul>
 
@@ -523,7 +530,7 @@ header .close {
 
 			<div id="info-framesPerSecond">
 				<h2>FPS</h2>
-				<p>This is a guesstimate of the average Frames Per Second the animation has being performed at. Ideally the animation should run at the same refresh rate of the device monitor (normally 60hz). An FPS lower than 50 throws a warning.</p>
+				<p>The average Frames Per Second the animation has being performed at. Ideally the animation should run at the same refresh rate of the device monitor (normally 60hz). An FPS lower than 50 throws a warning.</p>
 			</div>
 
 			<a href="javascript:toggleInfo()" class="back">« back</a>

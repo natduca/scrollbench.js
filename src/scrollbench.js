@@ -126,9 +126,12 @@
 	RAFScroller.prototype = {
 		getResult: function () {
 			var result = {};
+			var frameStats = this._getFrameStats();
 
 			result.numAnimationFrames = this.timeFrames.length;
-			result.droppedFrameCount = this._getDroppedFrameCount();
+			result.droppedFrameCount = frameStats.droppedFrameCount;
+			result.worstTime = frameStats.worstTime;
+			result.framesPerSecond = frameStats.fps;
 			result.totalTimeInSeconds = (this.timeFrames[this.timeFrames.length - 1] - this.timeFrames[0]) / 1000;
 
 			return result;
@@ -158,18 +161,28 @@
 			this.rolling = false;
 		},
 
-		_getDroppedFrameCount: function () {
+		_getFrameStats: function () {
 			var droppedFrameCount = 0,
 				frameTime,
+				fps = 0,
+				worstTime = 0,
 				i = 1,
 				l = this.timeFrames.length;
 
 			for ( i = 1; i < l; i++ ) {
 				frameTime = this.timeFrames[i] - this.timeFrames[i-1];
-				if (frameTime > 1000 / 55) droppedFrameCount++;
+				worstTime = Math.max(worstTime, frameTime);
+				fps += frameTime;
+				if (frameTime > 1000 / 55) {
+					droppedFrameCount++;
+				}
 			}
 
-			return droppedFrameCount;
+			return {
+				droppedFrameCount: droppedFrameCount,
+				worstTime: worstTime,
+				fps: 1000 / (fps / (l-1))
+			};
 		},
 
 		_getScrollPosition: function () {
@@ -434,7 +447,13 @@
 			this.result.timer = reliabilityReport.timer;
 			this.result.animation = reliabilityReport.animation;
 			this.result.avgTimePerPass = this.result.totalTimeInSeconds / this.pass;
-			this.result.framesPerSecond = 1000 / (this.result.totalTimeInSeconds / this.result.numAnimationFrames * 1000);
+
+			this.result.framesPerSecond = this.result.framesPerSecond ?
+				this.result.framesPerSecond / this.pass :
+				1000 / (this.result.totalTimeInSeconds / this.result.numAnimationFrames * 1000);
+
+			this.result.worstTime = this.result.worstTime || 0;
+
 			this.result.travel = this.travel;
 
 			// add warnings
@@ -520,7 +539,11 @@
 				i;
 
 			for ( i in result ) {
-				this.result[i] = (this.result[i] || 0) + result[i];
+				if ( i == 'worstTime' ) {
+					this.result[i] = this.result[i] ? Math.max(this.result[i], result[i]) : result[i];
+				} else {
+					this.result[i] = (this.result[i] || 0) + result[i];
+				}
 			}
 		},
 
