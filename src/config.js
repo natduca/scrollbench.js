@@ -18,7 +18,13 @@
 	// Acko
 	config.pages.push({
 		url: '^http://acko.net',
-		element: document.getElementsByClassName('content-holder')[0]
+		scrollableElementFn: function (callback) {
+			var el = document.getElementsByClassName('content-holder')[0];
+			if ( !(/(^|\s)perspective(\s|$)/.test(el.className)) ) {
+				el = document.documentElement;
+			}
+			callback(el);
+		}
 	});
 
 	// Google calendar
