@@ -166,6 +166,7 @@
 				frameTime,
 				fps = 0,
 				worstTime = 0,
+				threshold,
 				i = 1,
 				l = this.timeFrames.length;
 
@@ -173,7 +174,17 @@
 				frameTime = this.timeFrames[i] - this.timeFrames[i-1];
 				worstTime = Math.max(worstTime, frameTime);
 				fps += frameTime;
-				if (frameTime > 1000 / 55) {
+/*				if (frameTime > 1000 / 55) {
+					droppedFrameCount++;
+				}
+*/			}
+
+			fps = fps / (l-1);
+			threshold = fps * 0.1;
+
+			for ( i = 1; i < l; i++ ) {
+				frameTime = this.timeFrames[i] - this.timeFrames[i-1];
+				if ( Math.abs(frameTime - fps) > threshold ) {
 					droppedFrameCount++;
 				}
 			}
@@ -181,7 +192,7 @@
 			return {
 				droppedFrameCount: droppedFrameCount,
 				worstTime: worstTime,
-				fps: 1000 / (fps / (l-1))
+				fps: 1000 / fps
 			};
 		},
 
@@ -458,11 +469,14 @@
 
 			// add warnings
 			if ( this.result.droppedFrameCount > this.result.numAnimationFrames / 10 ) {
-				this.result.droppedFrameCount += '!';
+				this.result.steadiness = 'poor!';
+//				this.result.droppedFrameCount += '!';
 			} else if ( this.result.droppedFrameCount > this.result.numAnimationFrames / 20 ) {
-				this.result.droppedFrameCount += '-';
+				this.result.steadiness = 'mediocre-';
+//				this.result.droppedFrameCount += '-';
 			} else {
-				this.result.droppedFrameCount += '+';
+				this.result.steadiness = 'good+';
+//				this.result.droppedFrameCount += '+';
 			}
 
 			if ( this.result.framesPerSecond < 50 ) {

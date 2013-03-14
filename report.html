@@ -479,8 +479,11 @@ header .close {
 			</span></li>
 
 			<li><span class="valign">
-				<strong onclick="toggleInfo(this.children[0].id)"><span id="droppedFrameCount"></span>/<span id="numAnimationFrames"></span></strong>
-				<em>dropped frames</em>
+				<strong class="twolines" onclick="toggleInfo(this.children[0].id)">
+					<span id="steadiness"></span>
+					<span class="small">Jagged <span id="droppedFrameCount"></span>/<span id="numAnimationFrames"></span></span>
+				</strong>
+				<em>Steadiness</em>
 			</span></li>
 
 			<li><span class="valign">
