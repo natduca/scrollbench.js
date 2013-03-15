@@ -516,9 +516,9 @@ header .close {
 				<p>Your value is <b>%resolution%</b> because we use <b>%animation%</b> for animation and <b>%timer%</b> as a timer.</p>
 			</div>
 
-			<div id="info-droppedFrameCount">
-				<h2>Dropped/Total frames</h2>
-				<p>The number of dropped frames and the total frame count. When the browser is unable to catch up with the scrolling animation it skips a frame. Ideally you'd want 0 dropped frames, in reality a couple of frames are often needed (hence dropped) to "warm up" the browser. <span class="nomobile">A value of dropped frames higher than the 10% of the total frame count raises a warning.</span></p>
+			<div id="info-steadiness">
+				<h2>Steadiness</h2>
+				<p>Steadiness tells you if the framerate is constant. Ideally you want a steady framerate AND a high FPS. If this value is poor it means that you had a fluctuable framerate which is bad for animation smoothness. A warning is raised If you have less than 90% of steady frames.</p>
 			</div>
 
 			<div id="info-totalTimeInSeconds">

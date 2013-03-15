@@ -174,10 +174,7 @@
 				frameTime = this.timeFrames[i] - this.timeFrames[i-1];
 				worstTime = Math.max(worstTime, frameTime);
 				fps += frameTime;
-/*				if (frameTime > 1000 / 55) {
-					droppedFrameCount++;
-				}
-*/			}
+			}
 
 			fps = fps / (l-1);
 			threshold = fps * 0.1;
@@ -470,13 +467,10 @@
 			// add warnings
 			if ( this.result.droppedFrameCount > this.result.numAnimationFrames / 10 ) {
 				this.result.steadiness = 'poor!';
-//				this.result.droppedFrameCount += '!';
 			} else if ( this.result.droppedFrameCount > this.result.numAnimationFrames / 20 ) {
 				this.result.steadiness = 'mediocre-';
-//				this.result.droppedFrameCount += '-';
 			} else {
 				this.result.steadiness = 'good+';
-//				this.result.droppedFrameCount += '+';
 			}
 
 			if ( this.result.framesPerSecond < 50 ) {
