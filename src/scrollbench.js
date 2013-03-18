@@ -481,6 +481,19 @@
 				this.result.framesPerSecond += '+';
 			}
 
+			// compute overall benchmark result
+			if ( /\+/.test(this.result.steadiness) && /\+/.test(this.result.framesPerSecond) ) {
+				this.result.overall = '★★★★★+';
+			} else if ( /\-/.test(this.result.steadiness) && /\+/.test(this.result.framesPerSecond) ) {
+				this.result.overall = '★★★★+';
+			} else if ( /[+-]/.test(this.result.framesPerSecond) ) {
+				this.result.overall = '★★★-';
+			} else if ( /[+-]/.test(this.result.steadiness) && /!/.test(this.result.framesPerSecond) ) {
+				this.result.overall = '★★!';
+			} else {
+				this.result.overall = '★!';
+			}
+
 			if ( this.options.onCompletion ) {
 				this.options.onCompletion(this.result);
 				return;

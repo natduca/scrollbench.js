@@ -468,9 +468,9 @@ header .close {
 
 	<section class="report" id="report">
 		<ul id="results">
-			<li class="help"><span class="valign">
-				<b>Benchmarks</b>
-				Select a value to get related info
+			<li><span class="valign">
+				<strong onclick="toggleInfo(this.children[0].id)"><span id="overall"></span></strong>
+				<em>overall</em>
 			</span></li>
 
 			<li><span class="valign">
@@ -483,7 +483,7 @@ header .close {
 					<span id="steadiness"></span>
 					<span class="small">Jagged <span id="droppedFrameCount"></span>/<span id="numAnimationFrames"></span></span>
 				</strong>
-				<em>Steadiness</em>
+				<em>steadiness</em>
 			</span></li>
 
 			<li><span class="valign">
@@ -509,6 +509,11 @@ header .close {
 		</ul>
 
 		<div id="moreinfo" class="moreinfo hidden">
+			<div id="info-overall">
+				<h2>Overall</h2>
+				<p>The overall scrolling smoothness. It's an average between Steadiness and FPS. You get 5★ only if Steadiness is good and FPS is high. 4★ if FPS is high and Steadiness is mediocre. 3★ if FPS and Steadiness are mediocre. 2★ and 1★ if FPS and Steadiness are poor.</span></p>
+			</div>
+
 			<div id="info-resolution">
 				<h2>Resolution</h2>
 				<p>This value shows the ability of your specific browser/device to perform the test. Medium resolution is considered good enough for reliable results. <span class="nomobile">High is just for browsers that supports asynchronous scrolling (ie: only Chrome with gpuBenchmarking).</span></p>
@@ -518,7 +523,7 @@ header .close {
 
 			<div id="info-steadiness">
 				<h2>Steadiness</h2>
-				<p>Steadiness tells you if the framerate is constant. Ideally you want a steady framerate AND a high FPS. If this value is poor it means that you had a fluctuable framerate which is bad for animation smoothness. A warning is raised If you have less than 90% of steady frames.</p>
+				<p>Steadiness tells you if the framerate is constant. Ideally you want a steady framerate AND a high FPS. Scrollbench counts the number of frames that are 10% faster or 10% slower (aka jerky frames) than the average. The steadiness is poor if the number of jerky frames is higher than the 10% of the total.</p>
 			</div>
 
 			<div id="info-totalTimeInSeconds">
