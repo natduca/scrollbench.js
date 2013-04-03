@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ScrollbenchJS</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="css/site.css">
+	<script src="src/scrollbench.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+<header id="top" role="navigation" class="top-navigation">
+	<ul class="wrapper">
+		<li class="logo"><a href="index.html#top" onclick="fancyScrollTo(this.href.split('#')[1]);return false"><img src="images/scrollbenchjs-logo.svg" width="204" height="17" alt="scrollbench.js"></a></li>
+		<li><span>#</span><a href="#how-it-works" onclick="fancyScrollTo(this.href.split('#')[1]);return false">about</a></li>
+		<li><span>#</span><a href="#best-practices" onclick="fancyScrollTo(this.href.split('#')[1]);return false">best practices</a></li>
+		<li><span>#</span><a href="#quick-start" onclick="fancyScrollTo(this.href.split('#')[1]);return false">quick start</a></li>
+		<li><span>#</span><a href="#documentation" onclick="fancyScrollTo(this.href.split('#')[1]);return false">documentation</a></li>
+	</ul>
+	<a href="javascript:toggleNav()" class="open-nav mobile"><span>#</span>menu</a>
+</header>
+
+<script type="text/javascript">
+var tryme = new ScrollBench();
+
+// Look Ma', no jQuery!
+(function () {
+	var isAutoScrolling = false;
+	var raf = window.requestAnimationFrame	||
+		window.webkitRequestAnimationFrame	||
+		window.mozRequestAnimationFrame		||
+		window.oRequestAnimationFrame		||
+		window.msRequestAnimationFrame		||
+		function ( callback ) { window.setTimeout(callback, 1000 / 60); };
+
+	window.addEventListener('DOMMouseScroll', stopScrolling, false);
+	window.addEventListener('mousewheel', stopScrolling, false);
+
+	function stopScrolling () {
+		isAutoScrolling = false;
+	}
+
+	function fancyScrollTo (hash) {
+		if ( isAutoScrolling ) {
+			stopScrolling();
+			setTimeout(fancyScrollTo.bind(this, hash), 50);
+			return;
+		}
+
+		el = document.getElementById(hash);
+		var destination = el.offsetTop;
+
+		while (el = el.offsetParent) {
+			destination += el.offsetTop;
+		}
+
+		var startTime = Date.now();
+		var start = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
+		var left = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft)
+		var duration = Math.abs(destination - start);
+
+		function step () {
+			var now = Date.now();
+			var position;
+
+			if ( now >= startTime + duration ) {
+				stopScrolling();
+				window.scrollTo(left, destination);
+				window.location.href = '#' + hash;
+				return;
+			}
+
+			now = (now - startTime) / duration;
+			easing = Math.sqrt( 1 - ( --now * now ) );
+			position = Math.round( ( destination - start ) * easing + start );
+			window.scrollTo(left, position);
+
+			if ( isAutoScrolling ) raf(step);
+		}
+
+		isAutoScrolling = true;
+		step();
+	}
+
+	function toggleNav () {
+		var header = document.getElementById('top');
+
+		header.className = /\bactive\b/.test(header.className) ? header.className.replace('active', '') : header.className + ' active';
+	}
+
+	window.fancyScrollTo = fancyScrollTo;
+	window.toggleNav = toggleNav;
+})();
+</script>
+
+<section id="catch" class="catch">
+	<div class="wrapper">
+		<h1><object class="logo" data="images/scrollbenchjs-logo.svg?color1=222222&amp;animate=1" type="image/svg+xml">Scrollbench.js</object></h1>
+		<h2>Browser scrolling stress test</h2>
+		<p>Scrollbench.js benchmarks the browsers ability to scroll contents. This helps web designers optimizing HTML &amp; CSS, journalists comparing browser engines, enthusiasts feeding their benchmark thirst.</p>
+
+		<div class="try-me-button" onclick="tryme.start()">Try Me!</div>
+
+		<ul class="social">
+			<li>Share Me »</li>
+			<li class="github-star"><iframe src="http://ghbtns.com/github-btn.html?user=cubiq&amp;repo=scrollbench.js&amp;type=watch&amp;count=true&amp;size=large" allowtransparency="true" frameborder="0" scrolling="0" width="170" height="30"></iframe></li>
+
+			<li class="plus-one"><div class="g-plusone"></div></li>
+			<script type="text/javascript">
+				(function() {
+					var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+					po.src = 'https://apis.google.com/js/plusone.js';
+					var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+				})();
+			</script>
+
+			<li class="tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-via="cubiq" data-size="large">Tweet</a></li>
+			<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+		</ul>
+	</div>
+</section>
+
+<section class="how-it-works">
+	<span id="how-it-works" class="hash-trick"></span>
+	<div class="wrapper">
+		<div class="col span3">
+			<h2><span>#</span>About</h2>
+			<p>There are many browser benchmarks out there, Scrollbench.js tells you how good your browser is at scrolling. This might seem trivial but it's actually a good way to measure a website weight.</p>
+			<p>Complex DOM structure and sophisticated styling require more resources and the simple scroll action forces the browser to re-render the page contents. Hence a benchmark that checks the browser ability to scroll is actually a benchmark that tests the browser ability to draw elements in their respective styling.</p>
+		</div>
+		<div class="col span3">
+			<h2><span>#</span>What is it for?</h2>
+			<p>Scrollbench is a good way to compare browser engines. Testing the same page on different browsers gives you an idea of how good each engine is. Digging a bit deeper you should be able to identify which element or which style property is more difficult for your browser.</p>
+			<p>This might be a good starting point for browser vendors to identify their product deficencies and a quick way for designers to check their work weight.</p>
+		</div>
+	</div>
+</section>
+
+<section class="best-practices">
+	<span id="best-practices" class="hash-trick"></span>
+	<div class="wrapper">
+		<div class="col span3">
+			<h2><span>#</span>Best practices</h2>
+			<p>It is important to note that you shouldn't compare browsers that support different set of technologies. The benchmark is performed using the best API we can find on the platform, but a browser that supports <code>requestAnimationFrame</code> will have very different results compared to one that only has <code>setTimeout</code>.</p>
+			<p>For this reason at the end of the test you'll get an index which defines the browser <em>"resolution"</em>.</p>
+			<p>Presently we have 3 resolutions: <strong>High</strong>, <strong>Medium</strong> and <strong>Low</strong>. You should be comparing browsers at the same resolution index only. Clicking on the Resolution value in the report you'll also get a detailed list of the technologies used to perform the benchmark.</p>
+			<p><strong>Don't mix apples and oranges!</strong></p>
+		</div>
+		<div class="col span3">
+			<h2><span>#</span>Test reliability</h2>
+			<p>The more sophisticated your browser the more reliable the benchmark. On de/r-ecent browsers we can rely on <a href="http://www.w3.org/TR/animation-timing/">requestAnimationFrame</a> which grants the test a good resolution but that's only a part of the equation. We also need a high definition timer. A good candidate in this case would be <code>performance.now</code>.</p>
+
+			<p>So if you have both, the test result is considered <strong>reliable</strong>.</p>
+
+			<p>If one feature is missing we fall back to the closest alternative, which in case of <code>requestAnimationFrame</code> is <code>setTimeout</code> (notoriously a low definition timer).</p>
+
+			<p>For the test to be 100% reliable we would need support for <strong>asyncronous scrolling</strong>. Unfortunately that's an unofficial API with very little browser support (even though <a href="http://www.w3.org/wiki/Web_Performance/Charter#Async_scroll">something is moving</a> in that direction). Async scrolling is a way for the browser to simulate the page scrolling like it was performed by a real person.</p>
+
+			<p>As of this writing the only browser to support async scrolling is Chrome... With a caveat. You have to enable gpu benchmarking first. To do so, execute chrome from the command line with the <code>--enable-gpu-benchmarking</code> option.</p>
+		</div>
+	</div>
+</section>
+
+<section class="quick-start">
+	<span id="quick-start" class="hash-trick"></span>
+	<div class="wrapper clearfix">
+		<div class="col">
+			<h2><span>#</span>Quick start</h2>
+			<p>The easiest way to use Scrollbench.js is through the bookmarklet.</p>
+			
+			<ol class="steps div">
+				<li class="bookmarklet-button">Drag the <!-- bookmarklet --><a href="javascript:(function(){function e(){window.ScrollBench&&new ScrollBench({loadConfig:!0}).start()}if(!window.ScrollBench&&!window.scrollbench_bookmarklet){window.scrollbench_bookmarklet=!0;var n=document.createElement('script');return n.src='https://sb.cubiq.org/src/scrollbench.js?v'+Date.now(),n.addEventListener('load',e,!1),document.getElementsByTagName('head')[0].appendChild(n),void 0}e()})();"><!-- /bookmarklet -->ScrollBench.js</a> bookmarklet to the bookmarks bar of your browser</li>
+				<li>Click the bookmarklet on any web site to activate the benchmark</li>
+				<li>There's no three</li>
+			</ol>
+
+			<h3><span>#</span>Mobile</h3>
+			<p>Scrollbench loves mobile, too. (Unfortunately mobile doesn't love him back, in fact... ) The procedure to install the bookmarklet on mobile is a bit convulsed. Follow me closely.</p>
+
+			<p>Copy the bookmarklet code to the clipboard.</p>
+
+			<p><!-- bookmarklet --><textarea>javascript:(function(){function e(){window.ScrollBench&&new ScrollBench({loadConfig:!0}).start()}if(!window.ScrollBench&&!window.scrollbench_bookmarklet){window.scrollbench_bookmarklet=!0;var n=document.createElement("script");return n.src="https://sb.cubiq.org/src/scrollbench.js?v"+Date.now(),n.addEventListener("load",e,!1),document.getElementsByTagName("head")[0].appendChild(n),void 0}e()})();</textarea><!-- /bookmarklet --></p>
+
+			<p>Now add this site to the bookmarks. If you are on Android, lucky you! You can alter the URL field right away. Replace the site address with the content of the clipboard and save. If you are on iPhone, read on.</p>
+
+			<p>On iPhone save the bookmark, then open the bookmarks panel and edit the bookmark you just added. You are now able to modify the site address. Replace the address with the bookmarklet code and voilà!</p>
+
+			<p class="div">You can now call the Scrollbench on any site by simply selecting the bookmark.</p>
+
+			<h3><span>#</span>Like the coders do</h3>
+			<p>For a deeper integration you should include the script into your projects like so:</p>
+			
+			<pre><span class="pre-code">HTML</span>&lt;head&gt;
+...
+&lt;script src="scrollbench.js" type="text/javascript"&gt;&lt;/script&gt;
+&lt;/head&gt;</pre>
+			
+			<p>You can then invoke the scrollbench from inside your code or the debug console with the following:</p>
+			
+			<pre><span class="pre-code">javascript</span>var sb = new ScrollBench();
+sb.start();</pre>
+
+			<p class="div">For advanced usage see the <a href="#documentation" onclick="fancyScrollTo(this.href.split('#')[1]);return false">documentation</a>.</p>
+
+			<h3><span>#</span>Designer's best friend</h3>
+			<p>Scrollbench.js can be an invaluable tool for web designers, too. You can benchmark your layout performance and spot its weaknesses. If you notice too many dropped frames and low frame rate, it might be time to rethink your design. Try to temporarly hide some elements and run the test again until you find the culprit. It can be tedious but there's no price for a well optimized web site (especially on mobile).</p>
+
+		</div>
+	</div>
+</section>
+
+<section class="documentation">
+	<span id="documentation" class="hash-trick"></span>
+	<div class="wrapper">
+		<div class="col span6"><h2><span>#</span>Documentation</h2></div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<p>The shortest way to run a test is:</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench().start();</pre>
+
+				<p>To reuse the instance assign it to a variable:</p>
+				<pre><span class="pre-code">javascript</span>var sb = new ScrollBench();
+sb.start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>Scrollbench.js (SBJS) is a class, to use it you have to create an instace with <code>new</code>. The script initiates itself but does not perform any actual benchmark until you call the <code>start</code> method.</p>
+			</div>
+		</div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h3><span>#</span>Options</h3>
+
+				<p>SBJS accepts one paramenter for special configuration. The parameter must be an object and the accepted values are:</p>
+
+				<ol>
+					<li><strong>element:</strong> reference to a node object. SBJS can scroll both the whole page or a DOM element. Default: <code>document.documentElement</code>.</li>
+					<li><strong>initViewport:</strong> boolean. If <code>true</code> the viewport is set to initial scale 1.0. Default: <code>false</code>.</li>
+					<li><strong>iterations:</strong> an integer representing the number of passes to perform. Minimum suggested and default: <code>2</code>.</li>
+					<li><strong>loadConfig:</strong> boolean or string. Loads per site configurations from either the default config file or an user defined file. Default: <code>2</code>.</li>
+					<li><strong>onCompletion:</strong> function. Returns the results to a custom function. Default: <code>null</code></li>
+					<li><strong>scrollableElementFn:</strong> function. Function to be executed to find the scrollable element. Default: <code>null</code></li>
+					<li><strong>scrollStep:</strong> integer value. In case of synchronous scroll, the amount of pixels to scroll per cycle. Default: <code>100</code></li>
+					<li><strong>waitForFn:</strong> function. Holds back the benchmark execution until the passed function returns true. Default: <code>null</code></li>
+				</ol>
+			</div>
+		</div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-element"><span>#Options:</span>Element</h4>
+				<p>SBJS scrolls the DOM element with <code>id="scrollme"</code>:</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+	element: document.getElementById('scrollme')
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>By default SBJS scrolls the whole page (namely: <code>document.documentElement</code>). There are special cases where the content is contained inside an element and scrolling the document wouldn't have any effect. In those cases you can specify the element that needs to be scrolled.</p>
+			</div>
+		</div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-initViewport"><span>#Options:</span>initViewport</h4>
+				<p>Sets the viewport to scale factor 1.0:</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+	initViewport: true
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>This may be useful on mobile devices. If the website doesn't define the viewport size, the mobile browser tries to fit the page on the screen, but each screen/device will have a different scale factor. To get consistent benchmark results you can force the viewport scale factor to 1.0.</p>
+			</div>
+		</div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-iterations"><span>#Options:</span>iterations</h4>
+				<p>Performs the test 5 times instead of the default 2:</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+	iterations: 5
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>For better reliability the test is performed 2 times by default, but this value can be raised for higher resolution. The browser often needs a "warm up" period to reach the highest performance level, so the first pass has sometimes a lower performance rate.</p>
+			</div>
+		</div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-loadConfig"><span>#Options:</span>loadConfig</h4>
+				<p>Loads the default per site config file</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+	loadConfig: true
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>Any of the SBJS options can be passed on a per site basis from an user defined configuration file. By default no file is loaded, passing <code>true</code> SBJS loads the <a href="src/config.js">default config</a>. You may alternatively pass an URL the configuration file is loaded from.</p>
+
+				<p>The configuration is a javascript file that sets the <code>scrollbench_config</code> variable. See the <a href="src/config.js">default config</a> for reference.</p>
+
+				<p>Note that the bookmarklet loads the default config file but this is not the default SBJS behavior.</p>
+			</div>
+		</div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-onCompletion"><span>#Options:</span>onCompletion</h4>
+				<p>Bypasses the default report and simply shows an alert box with the results:</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+	onCompletion: function (result) {
+		alert(JSON.stringify(result, null, ' '))
+	}
+}).start();</pre>
+				<p>The parameter returned by the function has the following keys:</p>
+				<p><code>numAnimationFrames</code>: total number of frames of the animation<br>
+					<code>droppedFrameCount</code>: number of frames dropped (ie: performed with low frame rate)<br>
+					<code>totalTimeInSeconds</code>: runtime<br>
+					<code>resolution</code>: test reliability based on browser specs<br>
+					<code>timer</code>: timer used for the test<br>
+					<code>animation</code>: technology used to perform the animation<br>
+					<code>avgTimePerPass</code>: average time needed for each pass<br>
+					<code>framesPerSecond</code>: frames per second the animation is performed at (estimated)<br>
+					<code>travel</code>: pixels travelled by the animation</p>
+				<p>A value can be followed by a <code>!</code>, <code>-</code> or <code>+</code> meaning respectively: bad, average, good result.</p>
+			</div>
+
+			<div class="col span2 small">
+				<p>The results are shown by default in an overlaying iFrame, you may want to pass them to a custom function for further inspection. The results will be passed as first parameter to the specified fuction. The default internal report is not executed.</p>
+			</div>
+		</div>
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-scrollableElementFn"><span>#Options:</span>scrollableElementFn</h4>
+				<p>Tricky code to get the scrollable element on Gmail:</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+    scrollableElementFn: function (callback) {
+        gmonkey.load('2.0',
+            function (api) {
+                callback(api.getScrollableElement());
+            }
+        );
+    }
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>In some circumstances it's not possible to foresee the element that should be scrolled. In those cases we can rely on a custom function. The element must be sent as first parameter of a callback function.</p>
+			</div>
+		</div>
+
+
+		<div class="wrapper div">
+			<div class="col span4">
+				<h4 id="options-scrollStep"><span>#Options:</span>scrollStep</h4>
+				<p>Increase the number of frames by reducing the scrolling step from the default 100 to 50:</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+	scrollStep: 50
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>The scrolling is normally performed with a 100 pixels step. Each step is a frame. You may want to increase of decrease the number of frames by altering the scrollStep.</p>
+
+				<p>Note: this value is ignored in case of asyncronous scroll.</p>
+			</div>
+		</div>
+
+		<div class="wrapper">
+			<div class="col span4">
+				<h4 id="options-waitForFn"><span>#Options:</span>waitForFn</h4>
+				<p>Wait for the element <code>waitForMe</code> to be loaded before starting the benchmark.</p>
+				<pre><span class="pre-code">javascript</span>new ScrollBench({
+    waitForFn: function () {
+        return document.getElementById('waitForMe');
+    }
+}).start();</pre>
+			</div>
+
+			<div class="col span2 small">
+				<p>The passed function is executed repeatedely until it doesn't returs <code>true</code>. When it is finally <code>true</code>, the benchmark begins.</p>
+			</div>
+		</div>
+
+	</div>
+</section>
+
+<footer id="footer" class="footer">
+	<div class="wrapper">
+		<p><object class="logo" height="18" data="images/scrollbenchjs-logo.svg?color1=555555&amp;color2=999999&amp;animate=1" type="image/svg+xml">Scrollbench.js</object></p>
+		<p><strong>Scrollbench.js</strong>, Copyright (c) 2013 The Chromium Authors<br>Code licensed under the <a href="#">the MIT License</a>. Documentation licensed under <a href="#">CC BY 3.0</a>.</p>
+		<p>Nothing to see here. <a href="#top" onclick="fancyScrollTo(this.href.split('#')[1]);return false">Move along</a>.</p>
+	</div>
+</footer>
+
+</body>
+</html>
