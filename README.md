@@ -10,7 +10,7 @@ Scrollbench is a browser scrolling performance test. Scrollbench:
 
 ## About
 
-Complex DOM structure, sophisticated styling, and how the rendering engine chooses to deal with them all influence framerates during scrolling. Scrollbench tries to measure the framerate of a scroll and reports the 
+Complex DOM structure, sophisticated styling, and how the rendering engine chooses to deal with them all influence framerates during scrolling. Scrollbench tries to measure the framerate of a scroll and reports the average frame time as well as how many frames went significantly beyond that average (to give a sense of how steady the framerate is, which can be just as important as the average).
 
 Scrollbench was originally a little piece of a performance test in the Chromium project that was ripped out to live on its own here so it could be run in other browsers and contexts.
 
@@ -49,7 +49,7 @@ The easiest way to use Scrollbench.js is through the bookmarklet.
 
             `TODO`
     
-3. Invoke the bookmarklet:
+3. There is no 3, just run the bookmarklet:
     * On desktop browsers just click it.
     * On iOS Safari open the bookmarks list and select it.
     * On Chrome for Android, start typing "scrollbench" in the omnibox and hit "scrollbench" when it shows up in the suggestions list.
@@ -63,15 +63,15 @@ No bookmarklets in IE10, but you can invoke it through the F12 tools console:
 1. Open developer tools with "F12" and go to "Console"
 2. Execute:
 
-        ```javascript
-        document.head.innerHTML+="<script src='http://domain.com/fil.js'></script>";
-        ```
+    ```javascript
+    document.head.innerHTML+="<script src='http://domain.com/fil.js'></script>";
+    ```
     
 3. Execute:
 
-        ```javascript
-        var sb = new ScrollBench(); sb.start();
-        ```
+    ```javascript
+    var sb = new ScrollBench(); sb.start();
+    ```
 
 ## Interpretting Results
 
