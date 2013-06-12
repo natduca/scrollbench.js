@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Scrollbench.js Report</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+
+<script type="text/javascript">
+
+function sanitize (val) {
+	return val.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+function hashToReport () {
+	var el;
+	var value;
+	var report = decodeURIComponent(window.location.hash.substr(1)).split(',');
+
+	for ( var i = 0, l = report.length; i < l; i++ ) {
+		value = report[i].split('=');
+		el = document.getElementById(sanitize(value[0]));
+		if ( el ) {
+			if ( /!/.test(value[1]) ) {
+				el.parentNode.parentNode.parentNode.className = 'low';
+				value[1] = value[1].replace('!', '');
+			} else if ( /-/.test(value[1]) ) {
+				el.parentNode.parentNode.parentNode.className = 'medium';
+				value[1] = value[1].replace('-', '');
+			} else if ( /\+/.test(value[1]) ) {
+				el.parentNode.parentNode.parentNode.className = 'high';
+				value[1] = value[1].replace('+', '');
+			}
+
+			value[1] = sanitize(value[1]);
+			if ( +value[1] ) value[1] = Math.round(+value[1] * 1000) / 1000;
+			el.innerHTML = value[1];
+
+			if ( value[0] == 'worstTime' ) {
+				el.innerHTML += 'ms';
+			}
+		}
+
+		if ( value[0] == 'resolution' || value[0] == 'timer' || value[0] == 'animation' ) {
+			el = document.getElementById('info-resolution');
+			el.innerHTML = el.innerHTML.replace('%' + value[0] + '%', value[1]);
+		}
+	}
+}
+
+function toggleInfo (id) {
+	var info = document.getElementById('moreinfo');
+	var rslt = document.getElementById('results');
+
+	if ( id ) {
+		document.getElementById('info-' + id).className = 'show';
+		info.className = 'moreinfo';
+		rslt.className = 'hidden';
+
+		return;
+	}
+
+	document.querySelector('#moreinfo .show').className = '';
+	info.className += ' hidden';
+	rslt.className = '';
+}
+
+</script>
+
+<style type="text/css">
+@font-face {
+	font-family: 'CPMono_webfont';
+	src: url('css/fonts/CPMono_v07_Plain-webfont.eot');
+	src: url('css/fonts/CPMono_v07_Plain-webfont.eot?#iefix') format('embedded-opentype'),
+		url('css/fonts/CPMono_v07_Plain-webfont.woff') format('woff'),
+		url('css/fonts/CPMono_v07_Plain-webfont.ttf') format('truetype'),
+		url('css/fonts/CPMono_v07_Plain-webfont.svg#CPMono_v07Plain') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+strong, h2 {
+	font-family: 'CPMono_webfont';
+	font-style: normal;
+	font-weight: normal;
+}
+
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+html, body {
+	height: 100%;
+}
+
+body, ul, li, strong, em, p, h1, h2 {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-weight: normal;
+	font-style: normal;
+}
+
+ul {
+	list-style: none;
+}
+
+body {
+	background: #000;
+	color: #222;
+	line-height: 1;
+	font-size: 10px;
+	font-family: helvetica, arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	font-smoothing: antialiased;
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
+h2 {
+	font-weight: bold;
+	font-size: 1.4em;
+	margin-bottom: 0.4em;
+}
+
+p {
+	margin-bottom: 0.5em;
+}
+
+header, section {
+	display: block;
+}
+
+.wrapper {
+	height: 270px;
+	overflow: hidden;
+	background: #303030;
+}
+
+header {
+	display: block;
+	height: 32px;
+	background-color: #000;
+	overflow: hidden;
+}
+
+header .logo {
+	margin: 7px 0 0 8px;
+}
+
+header .close {
+	float: right;
+	width: 88px;
+	height: 32px;
+	line-height: 32px;
+	background-color: #3a3a3a;
+	color: #fff;
+	text-decoration: none;
+	font-size: 1.2em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+	text-align: center;
+}
+
+.report {
+	padding-top: 22px;
+	height: 100%;
+	background-color: #e0e0e0;
+	background-image:
+		-webkit-linear-gradient(#eee 15%, #f2f2f2 15%, #f2f2f2 20%, #e3e3e3 20%, #e3e3e3 35%, #f6f6f6 35%, #f6f6f6 40%, #ddd 40%, #ddd 55%, #eee 55%, #eee 70%, #fff 70%);
+	background-image:
+		-moz-linear-gradient(#eee 15%, #f2f2f2 15%, #f2f2f2 20%, #e3e3e3 20%, #e3e3e3 35%, #f6f6f6 35%, #f6f6f6 40%, #ddd 40%, #ddd 55%, #eee 55%, #eee 70%, #fff 70%);
+	background-image:
+		-ms-linear-gradient(#eee 15%, #f2f2f2 15%, #f2f2f2 20%, #e3e3e3 20%, #e3e3e3 35%, #f6f6f6 35%, #f6f6f6 40%, #ddd 40%, #ddd 55%, #eee 55%, #eee 70%, #fff 70%);
+	background-image:
+		-o-linear-gradient(#eee 15%, #f2f2f2 15%, #f2f2f2 20%, #e3e3e3 20%, #e3e3e3 35%, #f6f6f6 35%, #f6f6f6 40%, #ddd 40%, #ddd 55%, #eee 55%, #eee 70%, #fff 70%);
+	background-image:
+		linear-gradient(#eee 15%, #f2f2f2 15%, #f2f2f2 20%, #e3e3e3 20%, #e3e3e3 35%, #f6f6f6 35%, #f6f6f6 40%, #ddd 40%, #ddd 55%, #eee 55%, #eee 70%, #fff 70%);
+}
+
+.report ul {
+	display: block;
+	width: 900px;
+	margin: 0 auto;
+}
+
+.report li {
+	position: relative;
+
+	display: block;
+	float: left;
+	width: 280px;
+	height: 86px;
+
+	background-color: #f3f3f3;
+
+	text-align: center;
+	box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+	border: 3px solid #222;
+
+	margin-right: 20px;
+	margin-bottom: 20px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.report li:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.25em;
+}
+
+.report .valign {
+	display: inline-block;
+	vertical-align: middle;
+	width: 100%;
+}
+
+.report li:nth-child(3n+3) {
+	margin-right: 0;
+}
+
+.report em {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	display: block;
+	text-transform: uppercase;
+	font-size: 1.3em;
+	background: #222;
+	color: #fff;
+	height: 25px;
+	line-height: 25px;
+}
+
+.report strong {
+	display: block;
+	font-size: 3em;
+	font-weight: bold;
+	cursor: pointer;
+	padding-top: 32px;
+}
+
+.report strong.twolines {
+	padding-top: 28px;
+}
+
+.report .high {
+	background-color: #499D20;
+	color: #fff;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+}
+
+.report .medium {
+	background-color: #FFD53E;
+}
+
+.report .low {
+	background-color: #DF502D;
+	color: #fff;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+}
+
+.report .help {
+	overflow: visible;
+	white-space: normal;
+	text-align: center;
+	font-size: 1.4em;
+	background: #1B7DFF;
+	color: #fff;
+}
+
+.report .help b {
+	display: block;
+	font-size: 1.7em;
+	line-height: 120%;
+}
+
+.moreinfo {
+	width: 900px;
+	margin: 0 auto;
+	background-color: #f3f3f3;
+	font-size: 1.4em;
+	padding: 12px;
+	white-space: normal;
+	text-align: left;
+	line-height: 130%;
+	box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+	border: 3px solid #222;
+}
+
+.moreinfo div {
+	display: none;
+}
+
+.moreinfo .back {
+	display: block;
+	margin: 0 auto;
+	width: 100px;
+	padding: 6px 2px 6px 0px;
+	background: #222;
+	text-align: center;
+	text-decoration: none;
+	color: #fff;
+	text-transform: uppercase;
+	box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+}
+
+.hidden {
+	display: none !important;
+}
+
+.show {
+	display: block !important;
+}
+
+.small {
+	font-family: helvetica, arial, sans-serif;
+	display: block;
+	font-size: 0.4em;
+}
+
+/* Mostly tablets */
+@media only screen and (min-width:569px) and (max-width:800px) {
+	.report ul {
+		width: 768px;
+	}
+
+	.moreinfo {
+		width: 768px;
+	}
+
+	.report li {
+		width: 242px;
+	}
+}
+
+/* Mostly smartphones */
+@media only screen and (min-width:421px) and (max-width:568px) {
+	body {
+		font-size: 9px;
+	}
+
+	.report .help {
+		font-size: 1.2em;
+	}
+
+	.report .help b {
+		font-size: 1.6em;
+	}
+
+	.report ul {
+		width: 420px;
+	}
+
+	.moreinfo {
+		width: 420px;
+	}
+
+	.report li {
+		width: 133px;
+		margin-right: 10px;
+	}
+
+	.report em {
+		height: 20px;
+		line-height: 18px;
+	}
+
+	.report strong {
+		font-size: 2.3em;
+		padding-top: 26px;
+	}
+
+	.report strong.twolines {
+		padding-top: 20px;
+	}
+
+	.small {
+		font-size: 0.5em;
+	}
+}
+
+@media only screen and (max-width:420px) {
+	body {
+		font-size: 9px;
+	}
+
+	.report {
+		padding-top: 6px;
+	}
+
+	.report ul {
+		width: 308px;
+	}
+
+	.report li {
+		width: 150px;
+		height: 68px;
+		margin-right: 8px;
+		margin-bottom: 10px;
+	}
+
+	.report li:nth-child(3n+3) {
+		margin-right: 8px;
+	}
+
+	.report li:nth-child(even) {
+		margin-right: 0;
+	}
+
+	.moreinfo {
+		font-size: 1.4em;
+		width: 308px
+	}
+
+	.moreinfo .back {
+		width: 100%;
+	}
+
+	.nomobile {
+		display: none !important;
+	}
+
+	.report .help {
+		font-size: 1.5em;
+	}
+
+	.report em {
+		height: 18px;
+		line-height: 16px;
+	}
+
+	.report strong {
+		display: block;
+		font-size: 2.2em;
+		padding-top: 20px;
+	}
+
+	.report strong.twolines {
+		padding-top: 16px;
+	}
+
+	.report .help {
+		font-size: 1.2em;
+	}
+
+	.small {
+		font-size: 0.5em;
+	}
+}
+</style>
+</head>
+
+<body onload="hashToReport()">
+
+<div class="wrapper">
+	<header>
+		<object class="logo" height="18" data="images/scrollbenchjs-logo.svg?animate=1" type="image/svg+xml">Scrollbench.js</object>
+		<span class="close">× close</span>
+	</header>
+
+	<section class="report" id="report">
+		<ul id="results">
+			<li><span class="valign">
+				<strong onclick="toggleInfo(this.children[0].id)"><span id="overall"></span></strong>
+				<em>overall</em>
+			</span></li>
+
+			<li><span class="valign">
+				<strong onclick="toggleInfo(this.children[0].id)"><span id="resolution"></span></strong>
+				<em>resolution</em>
+			</span></li>
+
+			<li><span class="valign">
+				<strong class="twolines" onclick="toggleInfo(this.children[0].id)">
+					<span id="steadiness"></span>
+					<span class="small">Jagged <span id="droppedFrameCount"></span>/<span id="numAnimationFrames"></span></span>
+				</strong>
+				<em>steadiness</em>
+			</span></li>
+
+			<li><span class="valign">
+				<strong class="twolines" onclick="toggleInfo(this.children[0].id)">
+					<span id="totalTimeInSeconds"></span>
+					<span class="small">Avg <span id="avgTimePerPass"></span>
+				</strong>
+				<em>time</em>
+			</span></li>
+
+			<li><span class="valign">
+				<strong onclick="toggleInfo(this.children[0].id)"><span id="travel"></span></strong>
+				<em>travel</em>
+			</span></li>
+
+			<li><span class="valign">
+				<strong class="twolines" onclick="toggleInfo(this.children[0].id)">
+					<span id="framesPerSecond"></span>
+					<span class="small">Worst <span id="worstTime"></span>
+					<em>FPS</em>
+				</strong>
+			</span></li>
+		</ul>
+
+		<div id="moreinfo" class="moreinfo hidden">
+			<div id="info-overall">
+				<h2>Overall</h2>
+				<p>The overall scrolling smoothness. It's an average between Steadiness and FPS. You get 5★ only if Steadiness is good and FPS is high. 4★ if FPS is high and Steadiness is mediocre. 3★ if FPS and Steadiness are mediocre. 2★ and 1★ if FPS and Steadiness are poor.</span></p>
+			</div>
+
+			<div id="info-resolution">
+				<h2>Resolution</h2>
+				<p>This value shows the ability of your specific browser/device to perform the test. Medium resolution is considered good enough for reliable results. <span class="nomobile">High is just for browsers that supports asynchronous scrolling (ie: only Chrome with gpuBenchmarking).</span></p>
+				
+				<p>Your value is <b>%resolution%</b> because we use <b>%animation%</b> for animation and <b>%timer%</b> as a timer.</p>
+			</div>
+
+			<div id="info-steadiness">
+				<h2>Steadiness</h2>
+				<p>Steadiness tells you if the framerate is constant. Ideally you want a steady framerate AND a high FPS. Scrollbench counts the number of frames that are 10% faster or 10% slower (aka jerky frames) than the average. The steadiness is poor if the number of jerky frames is higher than the 10% of the total.</p>
+			</div>
+
+			<div id="info-totalTimeInSeconds">
+				<h2>Time</h2>
+				<p>The animation runtime. This is the duration of the whole animation, ie: the sum of all the passes. You also find the average time per pass. The default number of passes is 2, meaning that the page is scrolled from top to bottom two times.</p>
+			</div>
+
+			<div id="info-travel">
+				<h2>Travel</h2>
+				<p>The distance in pixels that the page has to scroll to reach the bottom of the page. This value is obtained subtracting the page height to the scroll height. Note that a short travel doesn't garantee reliable results.</p>
+			</div>
+
+			<div id="info-framesPerSecond">
+				<h2>FPS</h2>
+				<p>The average Frames Per Second the animation has being performed at. Ideally the animation should run at the same refresh rate of the device monitor (normally 60hz). An FPS lower than 50 throws a warning.</p>
+			</div>
+
+			<a href="javascript:toggleInfo()" class="back">« back</a>
+		</div>
+
+	</section>
+</div>
+
+</body>
+</html>
