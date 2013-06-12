@@ -258,4 +258,6 @@ Scrollbench could be way better! Here are some ways to help:
 2. Test it on various browsers! If you find a page that only fails in one browser, file an issue.
 3. Make the code better! Pull requests welcome, or if you have ideas on how this could be improved to be more accurate and want to talk about it, file an issue.
 
+## Updating the bookmarklet code
 
+To update the bookmarklet code (e.g. to change where the source files are served from) you need node and uglify-js installed first. Then modify src/bookmarklet.js as you see fit, and then run `node build/makebm.js`, which will minify src/bookmarklet.js and (theoretically) update anywhere the bookmarklet code appears with an updated copy.

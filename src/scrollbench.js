@@ -8,8 +8,8 @@
  */
 
 (function (window, document) {
-	var CONFIG_URL = 'https://sb.cubiq.org/src/config.js';
-	var REPORT_URL = '//sb.cubiq.org/report.html';
+	var CONFIG_URL = '//raw.github.com/natduca/scrollbench.js/master/src/config.js';
+	var REPORT_URL = '//raw.github.com/natduca/scrollbench.js/master/report.html';
 
 	var reliabilityReport = {};
 
