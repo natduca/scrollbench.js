@@ -8,7 +8,7 @@
  */
 
 (function (window, document) {
-	var CONFIG_URL = '//natduca.github.com/scrollbench.js/src/scrollbench.js';
+	var CONFIG_URL = '//natduca.github.com/scrollbench.js/src/config.js';
 	var REPORT_URL = '//natduca.github.com/scrollbench.js/report.html';
 
 	var reliabilityReport = {};
