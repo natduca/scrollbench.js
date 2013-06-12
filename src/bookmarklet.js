@@ -5,7 +5,7 @@
 	if ( !window.ScrollBench && !window.scrollbench_bookmarklet ) {
 		window.scrollbench_bookmarklet = true;
 		var script = document.createElement('script');
-		script.src = 'https://raw.github.com/cubiq/scrollbench.js/master/src/scrollbench.js';
+		script.src = 'https://raw.github.com/natduca/scrollbench.js/master/src/scrollbench.js';
 		//script.src = 'https://sb.cubiq.org/src/scrollbench.js?v' + Date.now();
 		script.addEventListener('load', run, false);
 		document.getElementsByTagName('head')[0].appendChild(script);
