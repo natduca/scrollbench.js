@@ -47,7 +47,7 @@ The easiest way to use Scrollbench.js is through the bookmarklet.
 1. Make a new bookmark (e.g. just bookmark this site).
 2. Edit the bookmarklet to have the name "scrollbench" and set its URL to this:
 
-            `TODO`
+            `javascript:!function(){function e(){window.ScrollBench&&new ScrollBench({loadConfig:!0}).start()}if(!window.ScrollBench&&!window.scrollbench_bookmarklet){window.scrollbench_bookmarklet=!0;var n=document.createElement('script');return n.src='https://raw.github.com/natduca/scrollbench.js/master/src/scrollbench.js',n.addEventListener('load',e,!1),document.getElementsByTagName('head')[0].appendChild(n),void 0}e()}();`
     
 3. There is no 3, just run the bookmarklet:
     * On desktop browsers just click it.
@@ -75,7 +75,15 @@ No bookmarklets in IE10, but you can invoke it through the F12 tools console:
 
 ## Interpretting Results
 
-*TODO*
+After running, scrollbench spits out some results in a report. Most of them are self-explanatory, but a few are difficult to understand. Here's the list:
+
+* Time: total time the test took to run, in seconds, across all runs. Also an average time per run.
+* Travel: distance scrolled in pixels. Note on infinite scroll pages (or pages that change the DOM while the test is running) this might not be the same as the height of the page.
+* FPS: frames per second of the animation, as defined by the number of frames generated in JavaScript. Note this might not be the same as frames seen by the user! This value is averaged across the duration of the animation, but the longest frame is also reported (since outliers represent bad jank).
+* Steadines: a rough, opiniated measurement of how steady the framerate was. This counts the number of frames that are more than 10% longer or shorter than average. The steadiness number is poor if more than 10% of the frames are more than 10% longer or shorter than average.
+* Resolution: a rough measurement of the test's accuracy based on the technique used for timing (date.now vs window.performance.now) and drawing (setTimeout vs requestAnimationFrame)
+* Overall: a rough measurement of how well the page did on the test. 5★ only if Steadiness is good and FPS is high. 4★ if FPS is high and Steadiness is mediocre. 3★ if FPS and Steadiness are mediocre. 2★ and 1★ if FPS and Steadiness are poor.
+
 
 ## Per-page configuration
 
