@@ -1,7 +1,7 @@
 Scrollbench
 =========
 
-Scrollbench is a browser scrolling performance test. Scrollbench:
+Scrollbench is a browser scrolling performance test. It was originally a performance test in the Chromium project that has been put into this standalone tool. Scrollbench:
 
  - Runs as a bookmarklet so it can work widely (including mobile), or can be invoked from JS on a page.
  - Uses the best frame time measurement methodology available on the platform; most commonly `requestAnimationFrame` callbacks, hi-resolution timer `window.performance.now()`, and `window.scrollBy()`.
