@@ -47,7 +47,7 @@ The easiest way to use Scrollbench.js is through the bookmarklet.
 1. Make a new bookmark (e.g. just bookmark this site).
 2. Edit the bookmarklet to have the name "scrollbench" and set its URL to this:
 
-            javascript:!function(){function e(){window.ScrollBench&&new ScrollBench({loadConfig:!0}).start()}if(!window.ScrollBench&&!window.scrollbench_bookmarklet){window.scrollbench_bookmarklet=!0;var n=document.createElement('script');return n.src='https://raw.github.com/natduca/scrollbench.js/master/src/scrollbench.js',n.addEventListener('load',e,!1),document.getElementsByTagName('head')[0].appendChild(n),void 0}e()}();
+            javascript:! function () { function e () { window.ScrollBench && new ScrollBench ( { loadConfig: ! 0 } ).start () } function scriptLoaded () { window.scrollbench_bookmarklet = ! 0; var n = document.createElement ( 'script' ); n.innerHTML = this.responseText; n.addEventListener ( 'load', e, ! 1 ); document.getElementsByTagName ( 'head' )[ 0 ].appendChild ( n ); e (); } var scriptRequest = new XMLHttpRequest (); scriptRequest.addEventListener ( 'load', scriptLoaded ); scriptRequest.open ( 'GET', 'https://raw.githubusercontent.com/natduca/scrollbench.js/master/src/scrollbench.js' ); scriptRequest.send (); } ();
 
 3. There is no 3, just run the bookmarklet:
     * On desktop browsers just click it.

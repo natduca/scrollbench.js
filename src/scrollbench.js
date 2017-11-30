@@ -8,8 +8,8 @@
  */
 
 (function (window, document) {
-	var CONFIG_URL = 'https://raw.github.com/natduca/scrollbench.js/master/src/config.js';
-	var REPORT_URL = '//natduca.github.com/scrollbench.js/report.html';
+	var CONFIG_URL = 'https://raw.githubusercontent.com/natduca/scrollbench.js/master/src/config.js';
+	var REPORT_URL = '//raw.githubusercontent.com/natduca/scrollbench.js/master/report.html';
 
 	var reliabilityReport = {};
 
@@ -362,10 +362,17 @@
 				return;
 			}
 
-			script = document.createElement('script');
-			script.src = typeof this.options.loadConfig == 'string' ? this.options.loadConfig : CONFIG_URL;
-			script.addEventListener('load', parseConfig, false);
-			document.getElementsByTagName('head')[0].appendChild(script);
+			function scriptLoaded() {
+				script = document.createElement('script');
+				script.innerHTML = this.responseText;
+				script.addEventListener('load', parseConfig, false);
+				document.getElementsByTagName('head')[0].appendChild(script);
+			}
+
+			var scriptRequest = new XMLHttpRequest ();
+			scriptRequest.addEventListener ( 'load', scriptLoaded );
+			scriptRequest.open ( 'GET', typeof this.options.loadConfig == 'string' ? this.options.loadConfig : CONFIG_URL );
+			scriptRequest.send ();
 		},
 
 		_waitForContent: function () {
@@ -586,10 +593,21 @@
 				window.scrollTo(0, 0);
 			}
 
-			frame.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;width:100%;height:270px;padding:0;margin:0;border:0';
-			frame.src = REPORT_URL + '#' + encodeURIComponent(parms.join(','));
-			frame.id = 'scrollbench-report-frame';
-			document.documentElement.appendChild(frame);
+
+			function frameLoaded() {
+				frame.style.cssText = 'position:fixed;z-index:2147483640;bottom:0;left:0;width:100%;height:270px;padding:0;margin:0;border:0';
+				frame.id = 'scrollbench-report-frame';
+				document.documentElement.appendChild(frame);
+				document.getElementById(frame.id).contentWindow.document.open();
+				document.getElementById(frame.id).contentWindow.document.write(this.responseText);
+				document.getElementById(frame.id).contentWindow.document.close();
+				document.getElementById(frame.id).contentWindow.document.body.dataset.resultHash = encodeURIComponent(parms.join(','));
+			}
+
+			var frameRequest = new XMLHttpRequest ();
+			frameRequest.addEventListener ( 'load', frameLoaded );
+			frameRequest.open ( 'GET', REPORT_URL );
+			frameRequest.send ();
 
 			// Close button is on the same parent page to avoid cross-domain errors
 			close.style.cssText = 'position:fixed;z-index:2147483641;bottom:238px;right:0;width:88px;height:32px;padding:0;margin:0;border:0;background:transparent;cursor:pointer';

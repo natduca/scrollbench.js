@@ -14,7 +14,7 @@ function sanitize (val) {
 function hashToReport () {
 	var el;
 	var value;
-	var report = decodeURIComponent(window.location.hash.substr(1)).split(',');
+	var report = decodeURIComponent(document.body.dataset.resultHash).split(',');
 
 	for ( var i = 0, l = report.length; i < l; i++ ) {
 		value = report[i].split('=');
